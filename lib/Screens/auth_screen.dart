@@ -52,12 +52,12 @@ class _AuthScreenState extends State<AuthScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
-    // final bloc = context.read<AuthBloc>();
+   final bloc = context.read<AuthBloc>();
     if (tab == 0) {
-      // bloc.add(LoginRequested(
-      //   email: _loginEmailCtrl.text.trim(),
-      //   password: _loginPassCtrl.text,
-      // ));
+      bloc.add(LoginRequested(
+        email: _loginEmailCtrl.text.trim(),
+        password: _loginPassCtrl.text,
+      ));
     } else {
       final full = _nameCtrl.text.trim();
       String first = full, last = '';
@@ -66,12 +66,12 @@ class _AuthScreenState extends State<AuthScreen> {
         first = sp.first;
         last = sp.sublist(1).join(' ');
       }
-      // bloc.add(SignupRequested(
-      //   firstName: first,
-      //   lastName: last,
-      //   email: _signupEmailCtrl.text.trim(),
-      //   password: _signupPassCtrl.text,
-      // ));
+      bloc.add(SignupRequested(
+        firstName: first,
+        lastName: last,
+        email: _signupEmailCtrl.text.trim(),
+        password: _signupPassCtrl.text,
+      ));
       setState(() => tab = 0);
     }
   }
@@ -189,56 +189,54 @@ class _AuthScreenState extends State<AuthScreen> {
                                   hint: 'Email',
                                   icon: 'assets/email_icon.png',
                                   controller: _nameCtrl,
-                                  validator: (v) => _required(v, 'Name'),
+                                 // validator: (v) => _required(v, 'Name'),
                                 ),
                                 const SizedBox(height: 12),
                                 _InputCard(
+                                  obscureText: true,
                                   hint: 'Password',
                                   icon: 'assets/password_icon.png',
                                   controller: _loginEmailCtrl,
                                   keyboardType: TextInputType.emailAddress,
-                                  validator: _validateEmail,
+                               //   validator: _validateEmail,
                                 ),
-                                const SizedBox(height: 14),
-                                Row(
+                                const SizedBox(height: 7),
+                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    GestureDetector(
-                                      onTap: () =>
-                                          setState(() => remember = !remember),
-                                      child: Row(
-                                        children: [
-                                          _CheckBoxSquare(checked: remember),
-                                          const SizedBox(width: 8),
-                                          const Text(
-                                            'Remember me',
-                                            style: TextStyle(
-                                              fontSize: 14.5,
-                                              color: Color(0xFF222222),
-                                            ),
+                                    // _CheckBoxSquare(checked: true, muted: true),
+                                    // const SizedBox(width: 8),
+                                    // const Text(
+                                    //   'Remember me',
+                                    //   style: TextStyle(
+                                    //     fontSize: 14.5,
+                                    //     color: Color(0xFF222222),
+                                    //   ),
+                                    // ),
+                                    // const Spacer(),
+                                    // const Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left:8.0),
+                                      child: TextButton(
+                                        // style: TextButton.styleFrom(
+                                        //   padding: EdgeInsets.zero,
+                                        //   foregroundColor: const Color(0xFF1B1B1B),
+                                        // ),
+                                        onPressed: () {},
+                                        child: const Text(
+                                          'Forgot password',
+                                          style: TextStyle(
+                                                   fontFamily: 'ClashGrotesk',
+                                            fontSize: 14.5,
+                                           fontWeight: FontWeight.w700
+                                           // color: Color(0xFF1B1B1B),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    TextButton(
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        foregroundColor: const Color(0xFF1B1B1B),
-                                      ),
-                                      onPressed: () {
-                                        // TODO: Forgot password
-                                      },
-                                      child: const Text(
-                                        'Forgot password',
-                                        style: TextStyle(
-                                          fontSize: 14.5,
-                                          color: Color(0xFF1B1B1B),
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
+                              //  const SizedBox(height: 12),
                                 _PrimaryGradientButton(text: 'Login', onPressed: _submit),
                                 const SizedBox(height: 18),
                                 _DividerWithArrows(label: 'Or login with'),
@@ -311,37 +309,37 @@ class _AuthScreenState extends State<AuthScreen> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 14),
-                                Row(
-                                  children: [
-                                    _CheckBoxSquare(checked: true, muted: true),
-                                    const SizedBox(width: 8),
-                                    const Text(
-                                      'Remember me',
-                                      style: TextStyle(
-                                        fontSize: 14.5,
-                                        color: Color(0xFF222222),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    TextButton(
-                                      // style: TextButton.styleFrom(
-                                      //   padding: EdgeInsets.zero,
-                                      //   foregroundColor: const Color(0xFF1B1B1B),
-                                      // ),
-                                      onPressed: () {},
-                                      child: const Text(
-                                        'Forgot password',
-                                        style: TextStyle(
-                                                 fontFamily: 'ClashGrotesk',
-                                          fontSize: 14.5,
-                                         fontWeight: FontWeight.w700
-                                         // color: Color(0xFF1B1B1B),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                //const SizedBox(height: 14),
+                                // Row(
+                                //   children: [
+                                //     _CheckBoxSquare(checked: true, muted: true),
+                                //     const SizedBox(width: 8),
+                                //     const Text(
+                                //       'Remember me',
+                                //       style: TextStyle(
+                                //         fontSize: 14.5,
+                                //         color: Color(0xFF222222),
+                                //       ),
+                                //     ),
+                                //     const Spacer(),
+                                //     TextButton(
+                                //       // style: TextButton.styleFrom(
+                                //       //   padding: EdgeInsets.zero,
+                                //       //   foregroundColor: const Color(0xFF1B1B1B),
+                                //       // ),
+                                //       onPressed: () {},
+                                //       child: const Text(
+                                //         'Forgot password',
+                                //         style: TextStyle(
+                                //                  fontFamily: 'ClashGrotesk',
+                                //           fontSize: 14.5,
+                                //          fontWeight: FontWeight.w700
+                                //          // color: Color(0xFF1B1B1B),
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
                                 const SizedBox(height: 12),
                                 _PrimaryGradientButton(text: 'SignUp', onPressed: _submit),
                                 const SizedBox(height: 18),
@@ -524,11 +522,13 @@ class _InputCard extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: TextFormField(
+
               controller: controller,
               keyboardType: keyboardType,
               validator: validator,
               obscureText: obscureText,
               decoration: InputDecoration(
+                
                 hintText: hint,
                 border: InputBorder.none,
                 isCollapsed: true,
