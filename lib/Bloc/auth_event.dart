@@ -6,6 +6,30 @@ abstract class AuthEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class UploadTwoWheelerRequested extends AuthEvent {
+  final String userId;
+  final String vehicleId;
+  final String token;       // Bearer <token>
+  final String frontPath;   // local file path (jpeg/png)
+  final String backPath;    // local file path (jpeg/png)
+  final String vehicleType; // "bike"
+  final String? vin;        // optional
+
+  const UploadTwoWheelerRequested({
+    required this.userId,
+    required this.vehicleId,
+    required this.token,
+    required this.frontPath,
+    required this.backPath,
+    this.vehicleType = 'bike',
+    this.vin,
+  });
+
+  @override
+  List<Object?> get props =>
+      [userId, vehicleId, token, frontPath, backPath, vehicleType, vin];
+}
+
 class LoginRequested extends AuthEvent {
   final String email;
   final String password;
