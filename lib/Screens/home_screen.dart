@@ -54,22 +54,34 @@ class InspectionHomePixelPerfect extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                    SizedBox(height: 6 * s),
                   _Header(s: s),
                   SizedBox(height: 16 * s),
                   _SearchBar(s: s),
-                  SizedBox(height: 16 * s),
+                  SizedBox(height: 25 * s),
                   _CarCard(s: s),
-                  SizedBox(height: 16 * s),
+                  SizedBox(height: 30 * s),
                   _BikeCard(s: s),
                 ],
               ),
             ),
-            Positioned(
-              left: 16 * s,
-              right: 16 * s,
-              bottom: 16 * s,
-              child: _BottomBar(s: s),
-            ),
+              Align(
+      alignment: Alignment.bottomCenter,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(16 * s, 0, 16 * s, 8 * s),
+          child: _BottomBar(s: s),
+        ),
+      ),
+    ),
+            // Positioned(
+            //  // top: 16,
+            //   left: 16 * s,
+            //   right: 16 * s,
+            //   bottom: 1 * s,
+            //   child: _BottomBar(s: s),
+            // ),
           ],
         ),
       ),
@@ -96,7 +108,13 @@ class _Header extends StatelessWidget {
                 height: 1.2,
               ),
               children: [
-                const TextSpan(text: 'Good morning,\n'),
+                 TextSpan(text: 'Good morning,\n',   style: TextStyle(
+                      fontFamily: 'ClashGrotesk',
+                      fontSize: 18 * s,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2,
+                      letterSpacing: 0.1 * s,
+                    ),),
                 WidgetSpan(
                   alignment: PlaceholderAlignment.baseline,
                   baseline: TextBaseline.alphabetic,
@@ -109,8 +127,8 @@ class _Header extends StatelessWidget {
                     ),
                     style: TextStyle(
                       fontFamily: 'ClashGrotesk',
-                      fontSize: 22 * s,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 25 * s,
+                      fontWeight: FontWeight.w900,
                       height: 1.2,
                       letterSpacing: 0.1 * s,
                     ),
@@ -135,8 +153,8 @@ class _Header extends StatelessWidget {
             ],
           ),
           child: CircleAvatar(
-            radius: 20 * s,
-            backgroundImage: const AssetImage('assets/images/avatar.jpg'),
+            radius: 30 * s,
+            backgroundImage: const AssetImage('assets/avatar.png'),
           ),
         ),
       ],
@@ -189,14 +207,15 @@ class _CarCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 156 * s,
+      height: 229 * s,
+      width: MediaQuery.of(context).size.width*0.90,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF1CC8FF), Color(0xFF6B63FF)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18 * s),
+        borderRadius: BorderRadius.circular(9 * s),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF6B63FF).withOpacity(0.25),
@@ -209,13 +228,13 @@ class _CarCard extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            right: -6 * s,
+            right: -25 * s,
             top: -10 * s,
             child: SizedBox(
-              width: 150 * s,
-              height: 150 * s,
+              width: 225 * s,
+              height: 230 * s,
               child: Image.asset(
-                'assets/images/car_wheel.png',
+                'assets/car_tyres.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -230,8 +249,8 @@ class _CarCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'ClashGrotesk',
                     color: Colors.white,
-                    fontSize: 20 * s,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 29 * s,
+                    fontWeight: FontWeight.w900,
                     height: 1.05,
                   ),
                 ),
@@ -241,15 +260,15 @@ class _CarCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'ClashGrotesk',
                     color: Colors.white.withOpacity(0.95),
-                    fontSize: 12.5 * s,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 16.5 * s,
+                    fontWeight: FontWeight.w600,
                     height: 1.25,
                   ),
                 ),
-                const Spacer(),
+                SizedBox(height: 25,),
                 _ChipButtonWhite(
                   s: s,
-                  icon: Icons.document_scanner_outlined,
+                  icon: 'assets/scan_icon.png',
                   label: 'Scan Car Tries', // matches the mock text
                 ),
               ],
@@ -269,10 +288,11 @@ class _BikeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 156 * s,
+           height: 239 * s,
+      width: MediaQuery.of(context).size.width*0.90,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18 * s),
+        borderRadius: BorderRadius.circular(9 * s),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
@@ -285,14 +305,15 @@ class _BikeCard extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            right: -4 * s,
-            top: -8 * s,
+          right: 18 * s,
+            top: -10 * s,
             child: SizedBox(
-              width: 150 * s,
-              height: 150 * s,
+              width: 225 * s,
+              height: 240 * s,
               child: Image.asset(
-                'assets/images/bike_wheel.png',
+                'assets/bike_wheel.png',
                 fit: BoxFit.contain,
+      
               ),
             ),
           ),
@@ -310,9 +331,10 @@ class _BikeCard extends StatelessWidget {
                   ),
                   style: TextStyle(
                     fontFamily: 'ClashGrotesk',
-                    fontSize: 20 * s,
-                    fontWeight: FontWeight.w800,
+                          fontSize: 29 * s,
+                    fontWeight: FontWeight.w900,
                     height: 1.05,
+                    
                   ),
                 ),
                 SizedBox(height: 6 * s),
@@ -321,8 +343,8 @@ class _BikeCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'ClashGrotesk',
                     color: Color(0xFF444B59),
-                    fontSize: 12.5 * s,
-                    fontWeight: FontWeight.w500,
+                         fontSize: 16.5 * s,
+                    fontWeight: FontWeight.w600,
                     height: 1.25,
                   ),
                 ),
@@ -345,17 +367,17 @@ class _BikeCard extends StatelessWidget {
 class _ChipButtonWhite extends StatelessWidget {
   const _ChipButtonWhite({required this.s, required this.icon, required this.label});
   final double s;
-  final IconData icon;
+  final String icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40 * s,
+      height: 46 * s,
       padding: EdgeInsets.symmetric(horizontal: 12 * s),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12 * s),
+        borderRadius: BorderRadius.circular(5 * s),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.10),
@@ -367,14 +389,14 @@ class _ChipButtonWhite extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Color(0xFF1F2937), size: 18 * s),
+        Image.asset(icon,height: 22 * s,width: 22 * s,color: Colors.black,), // Icon(icon, color: Color(0xFF1F2937), size: 18 * s),
           SizedBox(width: 8 * s),
           Text(
             label,
             style: TextStyle(
               fontFamily: 'ClashGrotesk',
               color: Color(0xFF1F2937),
-              fontSize: 14 * s,
+              fontSize: 16 * s,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -393,13 +415,13 @@ class _ChipButtonGradient extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40 * s,
+     height: 46 * s,
       padding: EdgeInsets.symmetric(horizontal: 12 * s),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF00C6FF), Color(0xFF7F53FD)],
         ),
-        borderRadius: BorderRadius.circular(12 * s),
+        borderRadius: BorderRadius.circular(5 * s),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF7F53FD).withOpacity(0.25),
@@ -411,14 +433,15 @@ class _ChipButtonGradient extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 18 * s),
+                  Image.asset('assets/scan_icon.png',height: 22 * s,width: 22 * s,color: Colors.white,),
+        //  Icon(icon, color: Colors.white, size: 18 * s),
           SizedBox(width: 8 * s),
           Text(
             label,
             style: TextStyle(
               fontFamily: 'ClashGrotesk',
-              color: Colors.white,
-              fontSize: 14 * s,
+            color: Colors.white,
+              fontSize: 16 * s,
               fontWeight: FontWeight.w800,
             ),
           ),

@@ -186,9 +186,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                   const SizedBox(height: 18),
 
-                                  // ======== FIELDS ========
                                   if (tab == 0) ...[
-                                    // ---------- LOGIN ----------
                                     _InputCard(
                                       hint: 'Email',
                                       icon: 'assets/email_icon.png',

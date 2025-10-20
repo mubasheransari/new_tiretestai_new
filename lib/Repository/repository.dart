@@ -248,8 +248,8 @@ class AuthRepositoryHttp implements AuthRepository {
 /// If you already have this class elsewhere, keep using it.
 /// Just here to show where login/signup endpoints are expected from.
 class ApiConfig {
-  static const login = 'https://example.com/login';  // replace with yours
-  static const signup = 'https://example.com/signup';// replace with yours
+  static const login = 'http://54.162.208.215/backend/api/login';  // replace with yours
+  static const signup = 'http://54.162.208.215/backend/api/signup';// replace with yours
 }
 
 /*
