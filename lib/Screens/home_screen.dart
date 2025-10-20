@@ -1,5 +1,9 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tire_testai/Bloc/auth_bloc.dart';
+import 'package:tire_testai/Bloc/auth_event.dart';
+import 'package:tire_testai/Screens/scanner_screen.dart';
 
 const kBg = Color(0xFFF6F7FA);
 const kTxtDim = Color(0xFF6A6F7B);
@@ -38,6 +42,48 @@ class InspectionHomePixelPerfect extends StatelessWidget {
     end: Alignment.centerRight,
   );
 
+  void _toast(BuildContext ctx, String msg) =>
+    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(msg)));
+
+Future<void> _openTwoWheelerScanner(BuildContext context) async {
+  // Navigate to your camera/reticle screen to capture FRONT + BACK
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const ScannerFrontTireScreen()),
+  );
+
+  // User backed out
+  if (result == null) return;
+
+  // Grab anything you need from auth state (token, userId, selected vehicleId)
+  final authState = context.read<AuthBloc>().state;
+  final token     = authState.loginResponse?.token ?? '';      // adjust field names
+  final userId    = '';
+  final vehicleId = 'YOUR_SELECTED_BIKE_ID';                   // supply from your UI/selection
+
+  if (token.isEmpty || userId.isEmpty) {
+    _toast(context, 'Please login again.');
+    return;
+  }
+
+  // Fire the upload event (this triggers the “generating” flow)
+  context.read<AuthBloc>().add(UploadTwoWheelerRequested(
+        userId:    userId,
+        vehicleId: vehicleId,
+        token:     token,
+        frontPath: result.frontPath,
+        backPath:  result.backPath,
+        vehicleType: 'bike',
+        vin: result.vin, // optional
+  ));
+
+  // Optionally show a “Generating Report” screen while Bloc uploads/parses
+  // Navigator.push(context,
+  //   MaterialPageRoute(builder: (_) => const GeneratingReportScreen()),
+  // );
+}
+
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -61,7 +107,11 @@ class InspectionHomePixelPerfect extends StatelessWidget {
                   SizedBox(height: 25 * s),
                   _CarCard(s: s),
                   SizedBox(height: 30 * s),
-                  _BikeCard(s: s),
+                  InkWell(
+                    onTap: (){
+                     _openTwoWheelerScanner(context);
+                    },
+                    child: _BikeCard(s: s)),
                 ],
               ),
             ),
