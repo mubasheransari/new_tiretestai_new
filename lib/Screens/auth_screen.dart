@@ -388,7 +388,7 @@ class _AuthToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 52,
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
@@ -418,6 +418,7 @@ class _AuthToggle extends StatelessWidget {
                     child: Text(
                       'Login',
                       style: TextStyle(
+                        fontFamily: 'ClashGrotesk',
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: activeIndex == 0
@@ -446,6 +447,7 @@ class _AuthToggle extends StatelessWidget {
                     child: Text(
                       'SignUp',
                       style: TextStyle(
+                        fontFamily: 'ClashGrotesk',
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: activeIndex == 1
