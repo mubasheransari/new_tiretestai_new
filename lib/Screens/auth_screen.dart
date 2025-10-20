@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tire_testai/Bloc/auth_bloc.dart';
 import 'package:tire_testai/Bloc/auth_event.dart';
 import 'package:tire_testai/Bloc/auth_state.dart';
+import 'package:tire_testai/Screens/home_screen.dart';
 
 
 class AuthScreen extends StatefulWidget {
@@ -107,8 +108,10 @@ class _AuthScreenState extends State<AuthScreen> {
           );
         }
         if (state.loginStatus == AuthStatus.success) {
-          // TODO: navigate on successful login
-          // Navigator.of(context).pushReplacementNamed('/home');
+              Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) =>  InspectionHomePixelPerfect()),
+                          );
         }
         if (state.signupStatus == AuthStatus.success) {
           // Already switched to login tab in _submit(); optionally show a toast/snackbar
