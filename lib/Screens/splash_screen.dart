@@ -53,46 +53,43 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     });
   }
 
-  @override
-  void dispose() {
-    _fadeCtrl.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _fadeCtrl.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
     // Full-bleed canvas; no SafeArea cropping to keep exact look
     return Scaffold(
     
-      body: FadeTransition(
-        opacity: _fadeCtrl,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // UPPER BACKGROUND (full bleed)
-            const _UpperBackground(imagePath: _upperPath),
-
-            // CENTER LOGO (fixed width relative to screen; tweak if needed)
-            Align(
-              alignment: const Alignment(0, -0.05), // slight optical lift
-              child: LayoutBuilder(
-                builder: (context, c) {
-                  final w = MediaQuery.of(context).size.width;
-                  final logoW = w * 0.64; // 64% of screen width (looks like your mock)
-                  return Image.asset(
-                    _logoPath,
-                    width: logoW,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
-                  );
-                },
-              ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // UPPER BACKGROUND (full bleed)
+          const _UpperBackground(imagePath: _upperPath),
+      
+          // CENTER LOGO (fixed width relative to screen; tweak if needed)
+          Align(
+            alignment: const Alignment(0, -0.05), // slight optical lift
+            child: LayoutBuilder(
+              builder: (context, c) {
+                final w = MediaQuery.of(context).size.width;
+                final logoW = w * 0.64; // 64% of screen width (looks like your mock)
+                return Image.asset(
+                  _logoPath,
+                  width: logoW,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                );
+              },
             ),
-
-            // BOTTOM DECOR (stick to bottom, match width, keep aspect)
-            const _BottomDecor(imagePath: _bottomPath),
-          ],
-        ),
+          ),
+      
+          // BOTTOM DECOR (stick to bottom, match width, keep aspect)
+          const _BottomDecor(imagePath: _bottomPath),
+        ],
       ),
       backgroundColor: Colors.white, // exact white canvas under images
     );

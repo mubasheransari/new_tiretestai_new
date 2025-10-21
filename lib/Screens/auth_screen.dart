@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tire_testai/Bloc/auth_bloc.dart';
@@ -73,7 +72,6 @@ class _AuthScreenState extends State<AuthScreen> {
           password: _signupPassCtrl.text,
         ),
       );
-      // Switch back to Login tab after requesting signup
       setState(() => tab = 0);
     }
   }
@@ -112,21 +110,13 @@ class _AuthScreenState extends State<AuthScreen> {
           ).showSnackBar(SnackBar(content: Text(state.error!)));
         }
         if (state.loginStatus == AuthStatus.success) {
-          // if (state.profileStatus == ProfileStatus.success) {
-          //   Navigator.pushReplacement(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => InspectionHomePixelPerfect(),
-          //     ),
-          //   );
-          // }
+  
           Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) =>  SplashScreen()),
-                      );
+            context,
+            MaterialPageRoute(builder: (context) => SplashScreen()),
+          );
         }
         if (state.signupStatus == AuthStatus.success) {
-          // Already switched to login tab in _submit(); optionally show a toast/snackbar
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Signup successful. Please login.')),
           );
