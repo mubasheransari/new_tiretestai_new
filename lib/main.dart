@@ -44,27 +44,58 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
-   final hasToken = (GetStorage().read<String>('auth_token') ?? '').trim().isNotEmpty;
+    // IMPORTANT: match your TokenStore. If you used a named box, use GetStorage('auth_box')
+    final box   = GetStorage();                    // or: GetStorage('auth_box')
+    final token = (box.read<String>('auth_token') ?? '').trim();
 
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (prev, curr) => prev.loginStatus != curr.loginStatus,
-      listener: (context, state) {
-        if (state.loginStatus == AuthStatus.success && state.profileStatus == ProfileStatus.success) {
-          // On login success, go to Home
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const InspectionHomePixelPerfect()),
-            (route) => false,
-          );
+    // No token → always Auth
+    if (token.isEmpty) return const AuthScreen();
+
+    // Token present → show Splash until profileStatus == success → then Home; failure → Auth
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (p, c) => p.profileStatus != c.profileStatus,
+      builder: (context, state) {
+        switch (state.profileStatus) {
+          case ProfileStatus.success:
+            return const InspectionHomePixelPerfect();
+          case ProfileStatus.failure:
+            // (optional) box.remove('auth_token'); // clear bad/expired token
+            return const AuthScreen();
+          case ProfileStatus.initial:
+          case ProfileStatus.loading:
+            return const SplashScreen();           // 👈 show your exact splash
         }
       },
-      child: hasToken  ? const SplashScreen() : const AuthScreen(),
     );
   }
 }
+
+
+
+// class AuthGate extends StatelessWidget {
+//   const AuthGate({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//    final hasToken = (GetStorage().read<String>('auth_token') ?? '').trim().isNotEmpty;
+
+//     return BlocListener<AuthBloc, AuthState>(
+//       listenWhen: (prev, curr) => prev.loginStatus != curr.loginStatus,
+//       listener: (context, state) {
+//         if (state.loginStatus == AuthStatus.success && state.profileStatus == ProfileStatus.success) {
+//           // On login success, go to Home
+//           Navigator.of(context).pushAndRemoveUntil(
+//             MaterialPageRoute(builder: (_) => const InspectionHomePixelPerfect()),
+//             (route) => false,
+//           );
+//         }
+//       },
+//       child: hasToken  ? const SplashScreen() : const AuthScreen(),
+//     );
+//   }
+// }

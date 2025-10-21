@@ -36,7 +36,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // brief, polished splash time
       await Future.delayed(const Duration(milliseconds: 1200));
       if (!mounted) return;
 
@@ -64,6 +63,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     // Full-bleed canvas; no SafeArea cropping to keep exact look
     return Scaffold(
+    
       body: FadeTransition(
         opacity: _fadeCtrl,
         child: Stack(
