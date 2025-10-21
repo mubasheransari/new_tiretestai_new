@@ -3,7 +3,7 @@ import 'package:tire_testai/Models/auth_models.dart';
 
 // auth_state.dart
 import 'package:equatable/equatable.dart';
-import 'package:tire_testai/Models/tyre_upload_models.dart';
+import 'package:tire_testai/Models/tyre_upload_response.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:tire_testai/Models/user_profile.dart';

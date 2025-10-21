@@ -407,8 +407,9 @@ class _AuthToggle extends StatelessWidget {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(2),
               child: AnimatedContainer(
+                height: 48,
                 duration: const Duration(milliseconds: 220),
                 decoration: BoxDecoration(
                   gradient: activeIndex == 0 ? _grad : null,
@@ -436,8 +437,9 @@ class _AuthToggle extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(6),
+    padding: const EdgeInsets.all(2),
               child: AnimatedContainer(
+                     height: 48,
                 duration: const Duration(milliseconds: 220),
                 decoration: BoxDecoration(
                   gradient: activeIndex == 1 ? _grad : null,
@@ -516,11 +518,19 @@ class _InputCard extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: TextFormField(
+          style:     TextStyle(
+                  fontFamily: 'ClashGrotesk',
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1
+                ),
               controller: controller,
               keyboardType: keyboardType,
               validator: validator,
               obscureText: obscureText,
               decoration: InputDecoration(
+              
                 hintText: hint,
                 border: InputBorder.none,
                 isCollapsed: true,

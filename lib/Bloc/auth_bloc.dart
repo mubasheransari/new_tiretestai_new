@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tire_testai/Bloc/auth_event.dart';
 import 'package:tire_testai/Bloc/auth_state.dart';
-import 'package:tire_testai/Models/tyre_upload_models.dart';
+import 'package:tire_testai/Models/tyre_upload_request.dart';
+import 'package:tire_testai/Models/tyre_upload_response.dart';
 import 'package:tire_testai/Repository/repository.dart';
 import '../Models/auth_models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,37 +79,111 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onTwoWheelerUpload(
-    UploadTwoWheelerRequested e,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(state.copyWith(twoWheelerStatus: TwoWheelerStatus.uploading, error: null));
 
-    final req = TyreUploadRequest(
-      userId: e.userId,
-      vehicleType: e.vehicleType,
-      vehicleId: e.vehicleId,
-      frontPath: e.frontPath,
-      backPath: e.backPath,
-      token: e.token,
-      vin: e.vin,
-    );
 
-    final r = await repo.uploadTwoWheeler(req);
+Future<void> _onTwoWheelerUpload(
+  UploadTwoWheelerRequested e,
+  Emitter<AuthState> emit,
+) async {
 
-    if (r.isSuccess) {
-      emit(state.copyWith(
-        twoWheelerStatus: TwoWheelerStatus.success,
-        twoWheelerResponse: r.data,
-        error: null,
-      ));
-    } else {
-      emit(state.copyWith(
-        twoWheelerStatus: TwoWheelerStatus.failure,
-        error: r.failure?.message ?? 'Upload failed',
-      ));
-    }
+     final box   = GetStorage();  
+      final token = (box.read<String>('auth_token') ?? '').trim();
+  // Prevent double-taps while an upload is in-flight
+  if (state.twoWheelerStatus == TwoWheelerStatus.uploading) return;
+
+  // Basic validations
+ // final token = e.token.trim();
+  if (token.isEmpty) {
+    emit(state.copyWith(
+      twoWheelerStatus: TwoWheelerStatus.failure,
+      error: 'Missing auth token. Please log in again.',
+    ));
+    return;
   }
+  // if (e.userId.trim().isEmpty) {
+  //   emit(state.copyWith(
+  //     twoWheelerStatus: TwoWheelerStatus.failure,
+  //     error: 'Missing user_id.',
+  //   ));
+  //   return;
+  // }
+  if (e.vehicleId.trim().isEmpty) {
+    emit(state.copyWith(
+      twoWheelerStatus: TwoWheelerStatus.failure,
+      error: 'Missing vehicle_id.',
+    ));
+    return;
+  }
+  if (!File(e.frontPath).existsSync()) {
+    emit(state.copyWith(
+      twoWheelerStatus: TwoWheelerStatus.failure,
+      error: 'Front image not found: ${e.frontPath}',
+    ));
+    return;
+  }
+  if (!File(e.backPath).existsSync()) {
+    emit(state.copyWith(
+      twoWheelerStatus: TwoWheelerStatus.failure,
+      error: 'Back image not found: ${e.backPath}',
+    ));
+    return;
+  }
+
+  emit(state.copyWith(
+    twoWheelerStatus: TwoWheelerStatus.uploading,
+    error: null, // clear any previous error
+  ));
+
+  
+
+  final req = TyreUploadRequest(
+    userId: state.profile!.userId.toString(),
+    vehicleType: 'bike', 
+    vehicleId: '993163bd-01a1-4c3b-9f18-4df2370ed954',
+    frontPath: e.frontPath,
+    backPath: e.backPath,
+    token: token,
+    vin: e.vin,
+  );
+
+  final r = await repo.uploadTwoWheeler(req);
+
+  if (r.isSuccess) {
+  emit(state.copyWith(
+    twoWheelerStatus: TwoWheelerStatus.success,
+    twoWheelerResponse: r.data,
+    error: null,
+  ));
+} else {
+  final sc  = r.failure?.statusCode;
+  final msg = r.failure?.message ?? 'Upload failed${sc != null ? ' ($sc)' : ''}';
+  emit(state.copyWith(
+    twoWheelerStatus: TwoWheelerStatus.failure,
+    error: msg, // <-- show backend message (e.g., “Vehicle not found”)
+  ));
+}
+
+  // if (r.isSuccess) {
+  //   emit(state.copyWith(
+  //     twoWheelerStatus: TwoWheelerStatus.success,
+  //     twoWheelerResponse: r.data,
+  //     error: null,
+  //   ));
+  // } else {
+  //   final sc = r.failure?.statusCode ?? 0;
+  //   var msg = r.failure?.message ?? 'Upload failed';
+  //   if (sc == 401 || sc == 403) {
+  //     msg = 'Session expired. Please log in again.';
+  //   } else if (sc == 404) {
+  //     msg = 'Upload endpoint not found (404).';
+  //   }
+  //   emit(state.copyWith(
+  //     twoWheelerStatus: TwoWheelerStatus.failure,
+  //     error: msg,
+  //   ));
+  // }
+}
+
 
   // NEW: Fetch profile
   Future<void> _onFetchProfile(

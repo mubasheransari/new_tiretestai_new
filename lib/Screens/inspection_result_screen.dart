@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:tire_testai/Models/tyre_upload_models.dart';
+import 'package:tire_testai/Models/tyre_upload_response.dart';
 
 
 
@@ -25,14 +25,13 @@ class InspectionResultScreen extends StatelessWidget {
 
     final d = response?.data;
 
-    // Prefer server URLs if provided; otherwise fall back to local captured files.
-    final frontImg = (d?.frontWheelUrl.isNotEmpty ?? false)
-        ? NetworkImage(d!.frontWheelUrl)
-        : FileImage(File(frontPath)) as ImageProvider;
+final frontImg = (d?.frontWheelUrl != null)
+    ? NetworkImage(d!.frontWheelUrl!)
+    : FileImage(File(frontPath)) as ImageProvider;
 
-    final backImg = (d?.backWheelUrl.isNotEmpty ?? false)
-        ? NetworkImage(d!.backWheelUrl)
-        : FileImage(File(backPath)) as ImageProvider;
+final backImg = (d?.backWheelUrl != null)
+    ? NetworkImage(d!.backWheelUrl!)
+    : FileImage(File(backPath)) as ImageProvider;
 
     final frontStatus = d?.frontTyreStatus ?? 'Unknown';
     final backStatus = d?.backTyreStatus ?? 'Unknown';

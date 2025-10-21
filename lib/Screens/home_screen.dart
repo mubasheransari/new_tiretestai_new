@@ -1,6 +1,7 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:tire_testai/Bloc/auth_bloc.dart';
 import 'package:tire_testai/Bloc/auth_event.dart';
 import 'package:tire_testai/Screens/scanner_screen.dart';
@@ -57,19 +58,20 @@ Future<void> _openTwoWheelerScanner(BuildContext context) async {
 
   // Grab anything you need from auth state (token, userId, selected vehicleId)
   final authState = context.read<AuthBloc>().state;
-  final token     = authState.loginResponse?.token ?? '';      // adjust field names
-  final userId    = '';
-  final vehicleId = 'YOUR_SELECTED_BIKE_ID';                   // supply from your UI/selection
+   final box   = GetStorage();  
+      final token = (box.read<String>('auth_token') ?? '').trim();//final token     = authState.loginResponse?.token ?? '';      // adjust field names
+  // final userId    = '';
+  // final vehicleId = 'YOUR_SELECTED_BIKE_ID';                   // supply from your UI/selection
 
-  if (token.isEmpty || userId.isEmpty) {
+  if (token.isEmpty ) {
     _toast(context, 'Please login again.');
     return;
   }
 
   // Fire the upload event (this triggers the “generating” flow)
   context.read<AuthBloc>().add(UploadTwoWheelerRequested(
-        userId:    userId,
-        vehicleId: vehicleId,
+        userId:    context.read<AuthBloc>().state.profile!.userId.toString(),
+        vehicleId: '993163bd-01a1-4c3b-9f18-4df2370ed954',
         token:     token,
         frontPath: result.frontPath,
         backPath:  result.backPath,
@@ -169,7 +171,7 @@ class _Header extends StatelessWidget {
                   alignment: PlaceholderAlignment.baseline,
                   baseline: TextBaseline.alphabetic,
                   child: _GradientText(
-                  "${context.read<AuthBloc>().state.profile!.firstName.toString() + context.read<AuthBloc>().state.profile!.lastName.toString()}", // 'William David',
+                  "${context.read<AuthBloc>().state.profile!.firstName.toString() + context.read<AuthBloc>().state.profile!.userId.toString()}", // 'William David',
                     gradient: const LinearGradient(
                       colors: [Color(0xFF00C6FF), Color(0xFF7F53FD)],
                       begin: Alignment.centerLeft,

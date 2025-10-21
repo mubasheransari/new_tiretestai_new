@@ -54,7 +54,7 @@ class AuthGate extends StatelessWidget {
     final token = (box.read<String>('auth_token') ?? '').trim();
 
     // No token → always Auth
-    if (token.isEmpty) return const AuthScreen();
+    if (token.isEmpty) return const SplashScreen();
 
     // Token present → show Splash until profileStatus == success → then Home; failure → Auth
     return BlocBuilder<AuthBloc, AuthState>(
