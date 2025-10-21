@@ -6,7 +6,7 @@ import 'package:tire_testai/Bloc/auth_bloc.dart';
 import 'package:tire_testai/Bloc/auth_event.dart';
 import 'package:tire_testai/Bloc/auth_state.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
-
+import 'package:tire_testai/Screens/splash_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -50,10 +50,12 @@ class _AuthScreenState extends State<AuthScreen> {
     final bloc = context.read<AuthBloc>();
     if (tab == 0) {
       // LOGIN
-      bloc.add(LoginRequested(
-        email: _loginEmailCtrl.text.trim(),
-        password: _loginPassCtrl.text,
-      ));
+      bloc.add(
+        LoginRequested(
+          email: _loginEmailCtrl.text.trim(),
+          password: _loginPassCtrl.text,
+        ),
+      );
     } else {
       // SIGNUP
       final full = _nameCtrl.text.trim();
@@ -63,12 +65,14 @@ class _AuthScreenState extends State<AuthScreen> {
         first = sp.first;
         last = sp.sublist(1).join(' ');
       }
-      bloc.add(SignupRequested(
-        firstName: first,
-        lastName: last,
-        email: _signupEmailCtrl.text.trim(),
-        password: _signupPassCtrl.text,
-      ));
+      bloc.add(
+        SignupRequested(
+          firstName: first,
+          lastName: last,
+          email: _signupEmailCtrl.text.trim(),
+          password: _signupPassCtrl.text,
+        ),
+      );
       // Switch back to Login tab after requesting signup
       setState(() => tab = 0);
     }
@@ -103,15 +107,23 @@ class _AuthScreenState extends State<AuthScreen> {
           p.error != c.error,
       listener: (context, state) {
         if (state.error != null && state.error!.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error!)));
         }
         if (state.loginStatus == AuthStatus.success) {
-              Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) =>  InspectionHomePixelPerfect()),
-                          );
+          // if (state.profileStatus == ProfileStatus.success) {
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => InspectionHomePixelPerfect(),
+          //     ),
+          //   );
+          // }
+          Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) =>  SplashScreen()),
+                      );
         }
         if (state.signupStatus == AuthStatus.success) {
           // Already switched to login tab in _submit(); optionally show a toast/snackbar
@@ -201,7 +213,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                       controller: _loginPassCtrl,
                                       obscureText: _loginObscure,
                                       onToggleObscure: () => setState(
-                                          () => _loginObscure = !_loginObscure),
+                                        () => _loginObscure = !_loginObscure,
+                                      ),
                                       validator: _validatePassword,
                                     ),
                                     const SizedBox(height: 7),
@@ -209,8 +222,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
+                                          padding: const EdgeInsets.only(
+                                            left: 8.0,
+                                          ),
                                           child: TextButton(
                                             onPressed: () {
                                               // TODO: navigate to forgot password screen
@@ -231,8 +245,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                       text: loginLoading
                                           ? 'Please wait...'
                                           : 'Login',
-                                      onPressed:
-                                          loginLoading ? null : _submit,
+                                      onPressed: loginLoading ? null : _submit,
                                       loading: loginLoading,
                                     ),
                                     const SizedBox(height: 18),
@@ -268,20 +281,17 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ] else ...[
                                     // ---------- SIGNUP ----------
                                     _InputCard(
-                                    
                                       hint: 'Name',
                                       icon: 'assets/name_icon.png',
                                       controller: _nameCtrl,
-                                      validator: (v) =>
-                                          _required(v, 'Name'),
+                                      validator: (v) => _required(v, 'Name'),
                                     ),
                                     const SizedBox(height: 12),
                                     _InputCard(
                                       hint: 'Email Address',
                                       icon: 'assets/email_icon.png',
                                       controller: _signupEmailCtrl,
-                                      keyboardType:
-                                          TextInputType.emailAddress,
+                                      keyboardType: TextInputType.emailAddress,
                                       validator: _validateEmail,
                                     ),
                                     const SizedBox(height: 12),
@@ -290,8 +300,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                       icon: 'assets/password_icon.png',
                                       controller: _signupPassCtrl,
                                       obscureText: _signupObscure,
-                                      onToggleObscure: () => setState(() =>
-                                          _signupObscure = !_signupObscure),
+                                      onToggleObscure: () => setState(
+                                        () => _signupObscure = !_signupObscure,
+                                      ),
                                       validator: _validatePassword,
                                     ),
                                     const SizedBox(height: 12),
@@ -300,8 +311,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                       icon: 'assets/password_icon.png',
                                       controller: _confirmCtrl,
                                       obscureText: _confirmObscure,
-                                      onToggleObscure: () => setState(() =>
-                                          _confirmObscure = !_confirmObscure),
+                                      onToggleObscure: () => setState(
+                                        () =>
+                                            _confirmObscure = !_confirmObscure,
+                                      ),
                                       validator: (v) {
                                         final err = _validatePassword(v);
                                         if (err != null) return err;
@@ -316,13 +329,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                       text: signupLoading
                                           ? 'Please wait...'
                                           : 'SignUp',
-                                      onPressed:
-                                          signupLoading ? null : _submit,
+                                      onPressed: signupLoading ? null : _submit,
                                       loading: signupLoading,
                                     ),
                                     const SizedBox(height: 18),
-                                  CenterLabelDivider(label: 'Or login with'),
-                                     const SizedBox(height: 14),
+                                    CenterLabelDivider(label: 'Or login with'),
+                                    const SizedBox(height: 14),
                                     Row(
                                       children: [
                                         Expanded(
@@ -350,7 +362,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     // ),
                                     const SizedBox(height: 18),
                                     _FooterSwitch(
-                                      prompt: "Already have an account? " ,
+                                      prompt: "Already have an account? ",
                                       action: "Login",
                                       onTap: () => setState(() => tab = 0),
                                     ),
@@ -505,7 +517,12 @@ class _InputCard extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 14),
-          Image.asset(icon, height: 17, width: 17, color: const Color(0xFF1B1B1B)),
+          Image.asset(
+            icon,
+            height: 17,
+            width: 17,
+            color: const Color(0xFF1B1B1B),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: TextFormField(
@@ -513,8 +530,7 @@ class _InputCard extends StatelessWidget {
               keyboardType: keyboardType,
               validator: validator,
               obscureText: obscureText,
-              decoration:  InputDecoration(
-                
+              decoration: InputDecoration(
                 hintText: hint,
                 border: InputBorder.none,
                 isCollapsed: true,
@@ -656,8 +672,6 @@ class _BrandButton extends StatelessWidget {
   }
 }
 
-
-
 class _FooterSwitch extends StatelessWidget {
   const _FooterSwitch({
     required this.prompt,
@@ -723,22 +737,20 @@ class CenterLabelDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ts = textStyle ??
+    final ts =
+        textStyle ??
         const TextStyle(
           fontSize: 13.5,
           fontWeight: FontWeight.w600,
           color: Color(0xFF616161),
-             fontFamily: 'ClashGrotesk',
+          fontFamily: 'ClashGrotesk',
         );
 
     Widget dot() => Container(
-          width: dotSize,
-          height: dotSize,
-          decoration: BoxDecoration(
-            color: textColor,
-            shape: BoxShape.circle,
-          ),
-        );
+      width: dotSize,
+      height: dotSize,
+      decoration: BoxDecoration(color: textColor, shape: BoxShape.circle),
+    );
 
     return Row(
       children: [
@@ -752,7 +764,7 @@ class CenterLabelDivider extends StatelessWidget {
         SizedBox(width: gap),
         dot(),
         const SizedBox(width: 8),
-        Text(label, style: ts,),
+        Text(label, style: ts),
         const SizedBox(width: 8),
         dot(),
         SizedBox(width: gap),
