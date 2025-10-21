@@ -257,7 +257,7 @@ class _CarCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 229 * s,
+      height: 219 * s,
       width: MediaQuery.of(context).size.width*0.90,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -315,7 +315,7 @@ class _CarCard extends StatelessWidget {
                     height: 1.25,
                   ),
                 ),
-                SizedBox(height: 25,),
+                SizedBox(height: 34,),
                 _ChipButtonWhite(
                   s: s,
                   icon: 'assets/scan_icon.png',
@@ -338,7 +338,7 @@ class _BikeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-           height: 239 * s,
+           height: 245 * s,
       width: MediaQuery.of(context).size.width*0.90,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -423,7 +423,7 @@ class _ChipButtonWhite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 46 * s,
+      height: 40 * s,
       padding: EdgeInsets.symmetric(horizontal: 12 * s),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -431,7 +431,7 @@ class _ChipButtonWhite extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.10),
-            blurRadius: 10 * s,
+            blurRadius: 12 * s,
             offset: Offset(0, 6 * s),
           ),
         ],
@@ -465,7 +465,7 @@ class _ChipButtonGradient extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-     height: 46 * s,
+     height: 40 * s,
       padding: EdgeInsets.symmetric(horizontal: 12 * s),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
