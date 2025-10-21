@@ -7,6 +7,7 @@ import 'package:tire_testai/Bloc/auth_state.dart';
 import 'package:tire_testai/Repository/repository.dart';
 import 'package:tire_testai/Screens/auth_screen.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
+import 'package:tire_testai/Screens/splash_screen.dart';
 
 
 
@@ -63,7 +64,7 @@ class AuthGate extends StatelessWidget {
           );
         }
       },
-      child: hasToken  ? const InspectionHomePixelPerfect() : const AuthScreen(),
+      child: hasToken  ? const SplashScreen() : const AuthScreen(),
     );
   }
 }
