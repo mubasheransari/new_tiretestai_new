@@ -118,16 +118,16 @@ Future<void> _openTwoWheelerScanner(BuildContext context) async {
                 ],
               ),
             ),
-              Align(
-      alignment: Alignment.bottomCenter,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(16 * s, 0, 16 * s, 8 * s),
-        child: _BottomBar(s: s, active: BottomTab.home),
-        ),
-      ),
+ Align(
+  alignment: Alignment.bottomCenter,
+  child: SafeArea(
+    top: false,
+    child: Padding(
+      padding: EdgeInsets.fromLTRB(16 * s, 0, 16 * s, 8 * s),
+      child: _BottomBar(s: s, active: BottomTab.home),
     ),
+  ),
+),
             // Positioned(
             //  // top: 16,
             //   left: 16 * s,

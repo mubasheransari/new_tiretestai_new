@@ -1,6 +1,7 @@
 // report_history_screen.dart
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:tire_testai/Screens/home_screen.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -142,6 +143,17 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               ),
             ),
 
+            Align(
+            alignment: Alignment.bottomCenter,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16 * s, 0, 16 * s, 8 * s),
+                child: _BottomBar(s: s, active: BottomTab.reports),
+              ),
+            ),
+          ),
+
             // Bottom frosted dock
             // Positioned(
             //   left: 16 * s,
@@ -223,6 +235,145 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   );
 }
 
+}
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({
+    required this.s,
+    this.active = BottomTab.home,
+  });
+
+  final double s;
+  final BottomTab active;
+
+  void _go(BuildContext ctx, BottomTab tab) {
+    if (tab == active) return; // already here
+    switch (tab) {
+      case BottomTab.home:
+       Navigator.push(ctx, MaterialPageRoute(builder: (ctx)=> InspectionHomePixelPerfect()));
+        break;
+      case BottomTab.reports:
+          Navigator.push(ctx, MaterialPageRoute(builder: (ctx)=> ReportHistoryScreen()));
+        break;
+      case BottomTab.map:
+        Navigator.of(ctx).pushReplacementNamed('/map');
+        break;
+      case BottomTab.about:
+        Navigator.of(ctx).pushReplacementNamed('/about');
+        break;
+      case BottomTab.profile:
+        Navigator.of(ctx).pushReplacementNamed('/profile');
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 64 * s,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32 * s),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 18 * s,
+            offset: Offset(0, 10 * s),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16 * s),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _NavIcon(
+            active: active == BottomTab.home,
+            icon: Icons.home_filled,
+            s: s,
+            onTap: () => _go(context, BottomTab.home),
+          ),
+          _NavIcon(
+            active: active == BottomTab.reports,
+            icon: Icons.insert_drive_file,
+            s: s,
+            onTap: () => _go(context, BottomTab.reports),
+          ),
+          _NavIcon(
+            active: active == BottomTab.map,
+            icon: Icons.location_on_rounded,
+            s: s,
+            onTap: () => _go(context, BottomTab.map),
+          ),
+          _NavIcon(
+            active: active == BottomTab.about,
+            icon: Icons.info_outline_rounded,
+            s: s,
+            onTap: () => _go(context, BottomTab.about),
+          ),
+          _NavIcon(
+            active: active == BottomTab.profile,
+            icon: Icons.person_rounded,
+            s: s,
+            onTap: () => _go(context, BottomTab.profile),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavIcon extends StatelessWidget {
+  const _NavIcon({
+    required this.active,
+    required this.icon,
+    required this.onTap,
+    this.s = 1,
+  });
+
+  final bool active;
+  final IconData icon;
+  final VoidCallback onTap;
+  final double s;
+
+  @override
+  Widget build(BuildContext context) {
+    // Make the whole icon tappable in both states.
+    if (!active) {
+      return InkWell(
+        borderRadius: BorderRadius.circular(22 * s),
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.all(8 * s),
+          child: Icon(icon, size: 24 * s, color: const Color(0xFF9AA1AE)),
+        ),
+      );
+    }
+
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: onTap,
+      child: Container(
+        width: 40 * s,
+        height: 40 * s,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF00C6FF), Color(0xFF7F53FD)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF7F53FD).withOpacity(0.35),
+              blurRadius: 14 * s,
+              offset: Offset(0, 6 * s),
+            ),
+          ],
+        ),
+        child: Icon(icon, size: 22 * s, color: Colors.white),
+      ),
+    );
+  }
 }
 
 /* ---------------- Filters bar ---------------- */

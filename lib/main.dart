@@ -4,12 +4,83 @@ import 'package:get_storage/get_storage.dart';
 import 'package:tire_testai/Bloc/auth_bloc.dart';
 import 'package:tire_testai/Bloc/auth_event.dart';
 import 'package:tire_testai/Bloc/auth_state.dart';
+import 'package:tire_testai/Data/app_routes.dart';
 import 'package:tire_testai/Repository/repository.dart';
 import 'package:tire_testai/Screens/auth_screen.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
 import 'package:tire_testai/Screens/splash_screen.dart';
 
 
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();                     // default box
+  final authRepo = AuthRepositoryHttp();
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+          create: (_) => AuthBloc(authRepo)..add(AppStarted()),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Taskoon App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.deepPurple,
+      ),
+      // Named routes used by the bottom bar:
+      onGenerateRoute: AppRoutes.onGenerateRoute,
+      // AuthGate decides which first screen to render:
+      home: const AuthGate(),
+    );
+  }
+}
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // If no token, show Auth immediately
+    final box   = GetStorage();
+    final token = (box.read<String>('auth_token') ?? '').trim();
+    if (token.isEmpty) return const AuthScreen();
+
+    // With token: wait for profile to load; success -> Home, failure -> Auth
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (p, c) => p.profileStatus != c.profileStatus,
+      builder: (context, state) {
+        switch (state.profileStatus) {
+          case ProfileStatus.success:
+            return const InspectionHomePixelPerfect(); // this screen has the bottom bar
+          case ProfileStatus.failure:
+            // Optional: box.remove('auth_token');
+            return const AuthScreen();
+          case ProfileStatus.initial:
+          case ProfileStatus.loading:
+          default:
+            return const SplashScreen();
+        }
+      },
+    );
+  }
+}
+
+
+/*
 
 void main() async{
   final authRepo = AuthRepositoryHttp();
@@ -75,7 +146,7 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-
+*/
 
 // class AuthGate extends StatelessWidget {
 //   const AuthGate({super.key});
