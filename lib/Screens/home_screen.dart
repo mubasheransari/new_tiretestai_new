@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:tire_testai/Bloc/auth_bloc.dart';
 import 'package:tire_testai/Bloc/auth_event.dart';
+import 'package:tire_testai/Screens/location_google_maos.dart';
 import 'package:tire_testai/Screens/report_history_screen.dart';
 import 'package:tire_testai/Screens/scanner_screen.dart';
 
@@ -580,7 +581,7 @@ class _BottomBar extends StatelessWidget {
           Navigator.push(ctx, MaterialPageRoute(builder: (ctx)=> ReportHistoryScreen()));
         break;
       case BottomTab.map:
-        Navigator.of(ctx).pushReplacementNamed('/map');
+        Navigator.push(ctx, MaterialPageRoute(builder: (ctx)=> LocationVendorsMapScreen()));
         break;
       case BottomTab.about:
         Navigator.of(ctx).pushReplacementNamed('/about');

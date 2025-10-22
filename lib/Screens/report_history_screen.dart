@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
+import 'package:tire_testai/Screens/location_google_maos.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -256,7 +257,7 @@ class _BottomBar extends StatelessWidget {
           Navigator.push(ctx, MaterialPageRoute(builder: (ctx)=> ReportHistoryScreen()));
         break;
       case BottomTab.map:
-        Navigator.of(ctx).pushReplacementNamed('/map');
+ Navigator.push(ctx, MaterialPageRoute(builder: (ctx)=> LocationVendorsMapScreen()));
         break;
       case BottomTab.about:
         Navigator.of(ctx).pushReplacementNamed('/about');
