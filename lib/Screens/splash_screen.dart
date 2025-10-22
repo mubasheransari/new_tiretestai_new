@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:tire_testai/Screens/app_shell.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
 
 // Replace these with your actual screens:
@@ -45,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => hasToken
-              ? const InspectionHomePixelPerfect()
+              ? const AppShell() //InspectionHomePixelPerfect()
               : const AuthScreen(),
         ),
         (route) => false,
