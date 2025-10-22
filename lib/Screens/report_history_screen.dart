@@ -315,8 +315,8 @@ class _ReportCard extends StatelessWidget {
         children: [
           // gradient spine
           Container(
-            width: 6 * s,
-            height: 90 * s,
+            width: 9 * s,
+            height: 131 * s,
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12),
@@ -446,7 +446,7 @@ class _DownloadPill extends StatelessWidget {
                   : null,
               color: enabled ? null : const Color(0xFFE2E8F0),
             ),
-            child: Icon(Icons.picture_as_pdf_rounded, size: 16 * s, color: enabled ? Colors.white : const Color(0xFF6B7280)),
+            child: Icon(Icons.picture_as_pdf_rounded, size: 19 * s, color: enabled ? Colors.white : const Color(0xFF6B7280)),
           ),
           SizedBox(width: 8 * s),
           Text(

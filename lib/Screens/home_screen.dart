@@ -172,7 +172,7 @@ class _Header extends StatelessWidget {
                   alignment: PlaceholderAlignment.baseline,
                   baseline: TextBaseline.alphabetic,
                   child: _GradientText(
-                  "${context.read<AuthBloc>().state.profile!.firstName.toString() + context.read<AuthBloc>().state.profile!.userId.toString()}", // 'William David',
+                  "${context.read<AuthBloc>().state.profile!.firstName.toString() + context.read<AuthBloc>().state.profile!.lastName.toString()}", // 'William David',
                     gradient: const LinearGradient(
                       colors: [Color(0xFF00C6FF), Color(0xFF7F53FD)],
                       begin: Alignment.centerLeft,
@@ -404,7 +404,7 @@ class _BikeCard extends StatelessWidget {
                 const Spacer(),
                 _ChipButtonGradient(
                   s: s,
-                  icon: Icons.document_scanner_outlined,
+
                   label: 'Scan Bike Tries', // matches the mock text
                 ),
               ],
@@ -460,9 +460,8 @@ class _ChipButtonWhite extends StatelessWidget {
 }
 
 class _ChipButtonGradient extends StatelessWidget {
-  const _ChipButtonGradient({required this.s, required this.icon, required this.label});
+  const _ChipButtonGradient({required this.s, required this.label});
   final double s;
-  final IconData icon;
   final String label;
 
   @override
