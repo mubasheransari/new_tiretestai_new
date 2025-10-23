@@ -575,8 +575,8 @@ class _VendorCard extends StatelessWidget {
       width: 250,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE9ECF2)),
+        borderRadius: BorderRadius.circular(9),
+       // border: Border.all(color: const Color(0xFFE9ECF2)),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(.06), blurRadius: 16, offset: const Offset(0, 8))],
       ),
       clipBehavior: Clip.antiAlias,
@@ -589,7 +589,7 @@ class _VendorCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18)),
+                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                   child: _netImg(v.imageUrl),
                 ),
                 Positioned(left: 10, top: 10, child: _ratingPill(v.rating)),
@@ -610,13 +610,13 @@ class _VendorCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(v.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Text(v.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16,fontFamily: 'ClashGrotesk')),
                 const SizedBox(height: 6),
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   // small filled blue dot like screenshot
                   Container(width: 10, height: 10, margin: const EdgeInsets.only(top: 3), decoration: const BoxDecoration(color: Color(0xFF3B82F6), shape: BoxShape.circle)),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(v.address, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: Color(0xFF6C7A91)))),
+                  Expanded(child: Text(v.address, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: Color(0xFF6C7A91),fontFamily: 'ClashGrotesk'))),
                 ]),
               ]),
             ),
@@ -644,12 +644,12 @@ Widget _netImg(String url) {
 
 Widget _ratingPill(double rating) {
   return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical:3),
     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(999)),
     child: Row(children: [
       const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFB300)),
       const SizedBox(width: 2),
-      Text('$rating', style: const TextStyle(fontWeight: FontWeight.w800)),
+      Text('$rating', style: const TextStyle(fontWeight: FontWeight.w800,fontFamily: 'ClashGrotesk',letterSpacing: 1.0)),
     ]),
   );
 }
