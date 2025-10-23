@@ -10,19 +10,14 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:ui' as ui;
+import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
-/*
-Image‑2 pixel style summary
-- Soft, light map with custom blue concentric markers
-- Top left back button + bold title
-- "Sponsored vendors :" pill label
-- Horizontal vendor cards with rounded image, rating badge, bookmark icon
-- Floating pill bottom nav; center action is larger w/ gradient
-- Custom tooltip card anchored to the selected marker
-
-Drop this file into your project and use as a drop‑in replacement for
-LocationVendorsMapScreen. Requires google_maps_flutter.
-*/
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationVendorsMapScreen extends StatefulWidget {
   const LocationVendorsMapScreen({super.key, this.showFirstTooltipOnLoad = true});
@@ -46,23 +41,62 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
   Offset? _selectedScreenPx; // map px for tooltip anchor
 
   // Marker art cache
-  Uint8List? _markerIconSmall;
+  //Uint8List? _markerIconSmall;
+  BitmapDescriptor? _markerIcon;
 
-  @override
-  void initState() {
-    super.initState();
-    _seedRandomMarkers(8);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // Prepare marker art after we know device pixel ratio
-      _markerIconSmall ??= await _buildMarkerArt(diameter: 54);
-      _refreshMarkersIcon();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _seedRandomMarkers(8);
+  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //     _markerIconSmall ??= await _buildMarkerArt(diameter: 54);
+  //     _refreshMarkersIcon();
 
-      if (widget.showFirstTooltipOnLoad && _markers.isNotEmpty) {
-        setState(() => _selected = _markers.first.markerId);
-        await _updateAnchor();
-      }
-    });
-  }
+  //     if (widget.showFirstTooltipOnLoad && _markers.isNotEmpty) {
+  //       setState(() => _selected = _markers.first.markerId);
+  //       await _updateAnchor();
+  //     }
+  //   });
+  // }
+  Future<BitmapDescriptor> _loadMarkerFromAsset(String asset, {Size? logicalSize}) {
+  final cfg = createLocalImageConfiguration(context, size: logicalSize);
+  return BitmapDescriptor.fromAssetImage(cfg, asset);
+}
+
+
+//   @override
+// void initState() {
+//   super.initState();
+//   _seedRandomMarkers(8);
+//   WidgetsBinding.instance.addPostFrameCallback((_) async {
+//     _markerIcon ??= await _loadMarkerFromAsset(
+//       'assets/marker_icon.png',
+//       logicalSize: const Size(92, 92), // desired logical size on map
+//     );
+//     _refreshMarkersIcon();
+
+  //   if (widget.showFirstTooltipOnLoad && _markers.isNotEmpty) {
+  //     setState(() => _selected = _markers.first.markerId);
+  //     await _updateAnchor();
+  //   }
+  // });
+// }
+
+@override
+void initState() {
+  super.initState();
+  _seedRandomMarkers(8);
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    _markerIcon ??= await markerFromAssetAtDp(context, 'assets/marker_icon.png', 62); // pick 72–84 for large
+    _refreshMarkersIcon();
+        if (widget.showFirstTooltipOnLoad && _markers.isNotEmpty) {
+      setState(() => _selected = _markers.first.markerId);
+      await _updateAnchor();
+    }
+
+  });
+}
+
 
   // ------------------------ Map style ------------------------
   static const _mapStyleJson = '''
@@ -102,9 +136,7 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
       final rating = (3.2 + r.nextDouble() * 1.6); // 3.2..4.8
       final v = VendorLite(
         i.isEven ? 'National Tyres And Autocare' : 'U.S. Auto Inspection',
-        i.isEven
-            ? 'Braconash Road, Leyland PR25 3ZE'
-            : 'Service \u2022 USA',
+        i.isEven ? 'Braconash Road, Leyland PR25 3ZE' : 'Service • USA',
         double.parse(rating.toStringAsFixed(1)),
         _sampleImages[i % _sampleImages.length],
       );
@@ -112,9 +144,8 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
       _markers.add(Marker(
         markerId: id,
         position: pos,
-        icon: _markerIconSmall != null
-            ? BitmapDescriptor.fromBytes(_markerIconSmall!)
-            : BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+    icon: _markerIcon ?? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+
         onTap: () async {
           setState(() => _selected = id);
           await _updateAnchor();
@@ -125,15 +156,27 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
   }
 
   void _refreshMarkersIcon() {
-    if (_markerIconSmall == null) return;
-    final updated = <Marker>{};
-    for (final m in _markers) {
-      updated.add(m.copyWith(iconParam: BitmapDescriptor.fromBytes(_markerIconSmall!)));
-    }
-    setState(() => _markers
-      ..clear()
-      ..addAll(updated));
+  if (_markerIcon == null) return;
+  final updated = <Marker>{};
+  for (final m in _markers) {
+    updated.add(m.copyWith(iconParam: _markerIcon));
   }
+  setState(() => _markers
+    ..clear()
+    ..addAll(updated));
+}
+
+
+  // void _refreshMarkersIcon() {
+  //   if (_markerIconSmall == null) return;
+  //   final updated = <Marker>{};
+  //   for (final m in _markers) {
+  //     updated.add(m.copyWith(iconParam: BitmapDescriptor.fromBytes(_markerIconSmall!)));
+  //   }
+  //   setState(() => _markers
+  //     ..clear()
+  //     ..addAll(updated));
+  // }
 
   Future<void> _updateAnchor() async {
     if (_gm == null || _selected == null) return;
@@ -207,7 +250,6 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final s = MediaQuery.sizeOf(context).width / 390.0; // scale ref = 390
     final pad = MediaQuery.of(context).padding;
 
     return Scaffold(
@@ -248,7 +290,7 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
                         trafficEnabled: false,
                       ),
 
-                      // Tooltip anchored to current selection
+                      // Tooltip anchored to current selection (optional, feels nice)
                       if (_selected != null && _selectedScreenPx != null)
                         _TooltipPositioner(
                           mapSize: Size(mapW, mapH),
@@ -261,51 +303,62 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
               ),
             ),
 
-            // --------------- HEADER ---------------
+            // --------------- HEADER (exact like screenshot) ---------------
             Positioned(
-              top: pad.top + 6 * s,
-              left: 12 * s,
-              right: 12 * s,
+             // top: pad.top + 1,
+              left: 6,
+              right: 6,
               child: Row(
                 children: [
-                  _roundBtn(
-                    onTap: () => Navigator.maybePop(context),
-                    child: const Icon(Icons.chevron_left_rounded, size: 26, color: Colors.black87),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.chevron_left_rounded, color: Colors.black, size: 32),
                   ),
-                  const SizedBox(width: 10),
                   Expanded(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10 * s, horizontal: 14 * s),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(.9),
-                        borderRadius: BorderRadius.circular(16 * s),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(.06), blurRadius: 14 * s, offset: Offset(0, 8 * s)),
-                        ],
-                      ),
-                      child: Text(
-                        'Tire inspection checkpoints',
+                    child: Text('Tire inspection Scanner',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18 * s, letterSpacing: .1),
-                      ),
-                    ),
+                        style: TextStyle(
+                          fontFamily: 'ClashGrotesk',
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20 ,
+                          color: Colors.black,
+                         // shadows: const [Shadow(color: Colors.black54, blurRadius: 8)],
+                        )),
                   ),
+                  const SizedBox(width: 46), // balance back button space
                 ],
               ),
+              
+              // Row(
+              //   children: [
+              //     IconButton(
+              //       onPressed: () => Navigator.maybePop(context),
+              //       icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87),
+              //     ),
+              //     const SizedBox(width: 2),
+              //     const Text(
+              //       'Tire inspection checkpoints',
+              //       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.black87, letterSpacing: .1),
+              //     ),
+              //   ],
+              // ),
             ),
 
-            // --------------- SPONSORED LABEL + CARDS ---------------
+            // --------------- SPONSORED LABEL + CARDS (matching layout) ---------------
             Positioned(
-              left: 14,
+              left: 4,
               right: 0,
-              bottom: 102 + pad.bottom,
+              bottom: 11 + pad.bottom,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _BlueLabel(tabText: 'Sponsored vendors :'),
-                  const SizedBox(height: 10),
+                   Padding(
+                     padding: const EdgeInsets.only(left:12.0),
+                     child: _BlueGradientLabel(text: 'Sponsored vendors :'),
+                   ),
+                  const SizedBox(height: 4),
                   SizedBox(
-                    height: 206,
+                    height: 216,
                     child: ListView.separated(
                       padding: const EdgeInsets.only(left: 14),
                       scrollDirection: Axis.horizontal,
@@ -338,49 +391,7 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
       ),
     );
   }
-
-  Widget _roundBtn({required Widget child, VoidCallback? onTap}) {
-    return InkWell(
-      customBorder: const CircleBorder(),
-      onTap: onTap,
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(.08), blurRadius: 12, offset: const Offset(0, 8)),
-          ],
-          border: Border.all(color: const Color(0xFFE9ECF2)),
-        ),
-        child: Center(child: child),
-      ),
-    );
-  }
 }
-
-
-
-class _TooltipPositioner extends StatelessWidget {
-  const _TooltipPositioner({required this.mapSize, required this.anchor, required this.child});
-  final Size mapSize;
-  final Offset anchor;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    const cardW = 250.0;
-    const cardH = 140.0;
-
-    final left = (anchor.dx - cardW * .65).clamp(12.0, mapSize.width - cardW - 12.0);
-    final top = (anchor.dy - cardH - 22).clamp(80.0, mapSize.height - cardH - 12.0);
-
-    return Positioned(left: left, top: top, child: child);
-  }
-}
-
-// -------------------- Vendor models & UI --------------------
 
 class VendorLite {
   final String title;
@@ -391,8 +402,8 @@ class VendorLite {
 }
 
 const _sampleImages = [
-  'https://images.unsplash.com/photo-1597764699514-0b46b6a68a07?q=80&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1603072386510-39ed9e02a9da?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1400&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1400&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1400&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1400&auto=format&fit=crop',
 ];
@@ -425,11 +436,7 @@ class _VendorTooltipCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   _netImg(vendor.imageUrl),
-                  Positioned(
-                    left: 6,
-                    top: 6,
-                    child: _ratingPill(vendor.rating),
-                  )
+                  Positioned(left: 6, top: 6, child: _ratingPill(vendor.rating)),
                 ],
               ),
             ),
@@ -445,13 +452,13 @@ class _VendorTooltipCard extends StatelessWidget {
                     Row(children: const [
                       Icon(Icons.build_circle_rounded, size: 14, color: Color(0xFF6C7A91)),
                       SizedBox(width: 4),
-                      Expanded(child: Text('Vehicle inspection service', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.2, color: Color(0xFF6C7A91))))
+                      Expanded(child: Text('Vehicle inspection service', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.2, color: Color(0xFF6C7A91)))),
                     ]),
                     const SizedBox(height: 2),
                     Row(children: const [
                       Icon(Icons.access_time_rounded, size: 14, color: Colors.redAccent),
                       SizedBox(width: 4),
-                      Expanded(child: Text('Closed • Opens 9:00', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.2, color: Color(0xFF6C7A91))))
+                      Expanded(child: Text('Closed • Opens 9:00', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.2, color: Color(0xFF6C7A91)))),
                     ]),
                     const Spacer(),
                     Row(children: [
@@ -462,11 +469,11 @@ class _VendorTooltipCard extends StatelessWidget {
                       _circleIcon(Icons.navigation_rounded),
                       const Spacer(),
                       const Icon(Icons.more_horiz_rounded, size: 22, color: Color(0xFF9AA1AE)),
-                    ])
+                    ]),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -504,7 +511,10 @@ class _VendorCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                ClipRRect(borderRadius: const BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18)), child: _netImg(v.imageUrl)),
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(18), topRight: Radius.circular(18)),
+                  child: _netImg(v.imageUrl),
+                ),
                 Positioned(left: 10, top: 10, child: _ratingPill(v.rating)),
                 Positioned(
                   right: 10,
@@ -526,9 +536,10 @@ class _VendorCard extends StatelessWidget {
                 Text(v.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                 const SizedBox(height: 6),
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Icon(Icons.place_rounded, size: 16, color: Color(0xFF6C7A91)),
-                  const SizedBox(width: 6),
-                  Expanded(child: Text(v.address, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: Color(0xFF6C7A91))))
+                  // small filled blue dot like screenshot
+                  Container(width: 10, height: 10, margin: const EdgeInsets.only(top: 3), decoration: const BoxDecoration(color: Color(0xFF3B82F6), shape: BoxShape.circle)),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(v.address, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: Color(0xFF6C7A91)))),
                 ]),
               ]),
             ),
@@ -566,32 +577,62 @@ Widget _ratingPill(double rating) {
   );
 }
 
-// ----------------------------- Blue label ------------------------------
-class _BlueLabel extends StatelessWidget {
-  const _BlueLabel({required this.tabText});
-  final String tabText;
+// ----------------------------- Gradient label ------------------------------
+class _BlueGradientLabel extends StatelessWidget {
+  const _BlueGradientLabel({required this.text});
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFE7F0FF),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFD4E3FF)),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF5AA8FF), Color(0xFF377BFF)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [BoxShadow(color: Color(0x1A377BFF), blurRadius: 10, offset: Offset(0, 4))],
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: const [
-        _Dot(),
-        SizedBox(width: 8),
-        Text('Sponsored vendors :', style: TextStyle(color: Color(0xFF3B82F6), fontWeight: FontWeight.w800, letterSpacing: .2)),
-      ]),
+      child: Text(text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, letterSpacing: .2)),
     );
   }
 }
 
-class _Dot extends StatelessWidget {
-  const _Dot();
+// ----------------------------- Tooltip anchor positioning -------------------
+class _TooltipPositioner extends StatelessWidget {
+  const _TooltipPositioner({required this.mapSize, required this.anchor, required this.child});
+  final Size mapSize;
+  final Offset anchor;
+  final Widget child;
+
   @override
-  Widget build(BuildContext context) => Container(width: 6, height: 6, decoration: const BoxDecoration(color: Color(0xFF3B82F6), shape: BoxShape.circle));
+  Widget build(BuildContext context) {
+    const cardW = 250.0;
+    const cardH = 140.0;
+
+    final left = (anchor.dx - cardW * .65).clamp(12.0, mapSize.width - cardW - 12.0);
+    final top = (anchor.dy - cardH - 22).clamp(80.0, mapSize.height - cardH - 12.0);
+
+    return Positioned(left: left, top: top, child: child);
+  }
 }
 
+Future<BitmapDescriptor> markerFromAssetAtDp(
+  BuildContext context,
+  String assetPath,
+  double logicalDp,
+) async {
+  final dpr = MediaQuery.of(context).devicePixelRatio;
+  final targetWidthPx = (logicalDp * dpr).round();
+
+  final data = await rootBundle.load(assetPath);
+  final codec = await ui.instantiateImageCodec(
+    data.buffer.asUint8List(),
+    targetWidth: targetWidthPx,
+  );
+  final frame = await codec.getNextFrame();
+  final bytes = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+  return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
+}

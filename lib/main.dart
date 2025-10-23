@@ -65,7 +65,7 @@ class AuthGate extends StatelessWidget {
       builder: (context, state) {
         switch (state.profileStatus) {
           case ProfileStatus.success:
-            return const InspectionHomePixelPerfect(); // this screen has the bottom bar
+            return const SplashScreen(); // this screen has the bottom bar
           case ProfileStatus.failure:
             // Optional: box.remove('auth_token');
             return const AuthScreen();
