@@ -318,7 +318,7 @@ void initState() {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'ClashGrotesk',
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
                           fontSize: 20 ,
                           color: Colors.black,
                          // shadows: const [Shadow(color: Colors.black54, blurRadius: 8)],
@@ -353,9 +353,9 @@ void initState() {
                 children: [
 Positioned(
   left: 16,
-  bottom: 14,
+  bottom: 12,
   child: Container(
-    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
+    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 4),
     decoration: const BoxDecoration(
       // blue → cyan gradient like the sample
       gradient: LinearGradient(
@@ -385,7 +385,7 @@ Positioned(
       style: TextStyle(
         fontFamily: 'ClashGrotesk',
         color: Colors.white,
-        fontSize: 16,
+        fontSize: 19,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.2,
       ),
