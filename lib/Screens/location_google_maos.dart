@@ -93,7 +93,6 @@ void initState() {
       setState(() => _selected = _markers.first.markerId);
       await _updateAnchor();
     }
-
   });
 }
 
@@ -348,15 +347,93 @@ void initState() {
             Positioned(
               left: 4,
               right: 0,
-              bottom: 11 + pad.bottom,
+              bottom: 18 + pad.bottom,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Padding(
-                     padding: const EdgeInsets.only(left:12.0),
-                     child: _BlueGradientLabel(text: 'Sponsored vendors :'),
-                   ),
-                  const SizedBox(height: 4),
+Positioned(
+  left: 16,
+  bottom: 14,
+  child: Container(
+    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
+    decoration: const BoxDecoration(
+      // blue → cyan gradient like the sample
+      gradient: LinearGradient(
+        colors: [Color(0xFF6D63FF), Color(0xFF2DA3FF)],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+      // left corners small, right corners fully round
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(10),
+        bottomLeft: Radius.circular(10),
+        topRight: Radius.circular(999),   // big radius => half-circle on right
+        bottomRight: Radius.circular(999),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Color(0x1F000000),
+          blurRadius: 6,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: const Text(
+      'Sponsored vendors :',
+      textAlign: TextAlign.center,
+      
+      style: TextStyle(
+        fontFamily: 'ClashGrotesk',
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+    ),
+  ),
+),
+
+
+
+                  // In a widget:
+// Stack(
+//   children: [
+//     Container(decoration: BoxDecoration(
+//          // color: Colors.black.withOpacity(0.5),
+//           borderRadius: BorderRadius.circular(30),
+//         ),child: Image.asset('assets/sponser_vendor.png', fit: BoxFit.cover, width: 200,height: 40,)),
+//     Positioned(
+//       left: 16, bottom: 8,
+//       child: Container(
+//        // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//         decoration: BoxDecoration(
+//          // color: Colors.black.withOpacity(0.5),
+//           borderRadius: BorderRadius.circular(30),
+//         ),
+//         child: Center(
+//           child: const Text(
+//             'Hello Melbourne',
+//             style: TextStyle(
+//               color: Colors.white,
+//               fontSize: 20,
+//               fontWeight: FontWeight.w600,
+//            //   shadows: [Shadow(blurRadius: 4, offset: Offset(0,1))],
+//             ),
+//           ),
+//         ),
+//       ),
+//     ),
+//   ],
+// ),
+
+
+              //    const SponsoredPill(text: 'Sponsored vendors :'),
+
+                  //  Padding(
+                  //    padding: const EdgeInsets.only(left:12.0),
+                  //    child: _BlueGradientLabel(text: 'Sponsored vendors :'),
+                  //  ),
+                  const SizedBox(height: 13),
                   SizedBox(
                     height: 216,
                     child: ListView.separated(
@@ -635,4 +712,82 @@ Future<BitmapDescriptor> markerFromAssetAtDp(
   final frame = await codec.getNextFrame();
   final bytes = await frame.image.toByteData(format: ui.ImageByteFormat.png);
   return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
+}
+
+
+
+/// Usage:
+/// SponsoredPill(text: 'Sponsored vendors :'),
+class SponsoredPill extends StatelessWidget {
+  const SponsoredPill({
+    super.key,
+    required this.text,
+    this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+    this.radius = 16,
+  });
+
+  final String text;
+  final EdgeInsets padding;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Base gradient chip
+        Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(0xFF7C6EFF), // purple-ish (left)
+                Color(0xFF55AEFF), // blue (right)
+              ],
+            ),
+            borderRadius: BorderRadius.circular(radius),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1A377BFF), // soft blue shadow
+                blurRadius: 12,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+              letterSpacing: .2,
+            ),
+          ),
+        ),
+
+        // Subtle glossy highlight (top-left → bottom-right)
+        Positioned.fill(
+          child: IgnorePointer(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(radius),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withOpacity(.18),
+                      Colors.white.withOpacity(.02),
+                    ],
+                    stops: const [0.0, 0.85],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
