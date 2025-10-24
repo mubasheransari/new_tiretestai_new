@@ -68,7 +68,7 @@ class AuthGate extends StatelessWidget {
             return const SplashScreen(); // this screen has the bottom bar
           case ProfileStatus.failure:
             // Optional: box.remove('auth_token');
-            return const AuthScreen();
+            return const SplashScreen();
           case ProfileStatus.initial:
           case ProfileStatus.loading:
           default:

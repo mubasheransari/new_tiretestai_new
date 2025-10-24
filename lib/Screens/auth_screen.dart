@@ -111,10 +111,10 @@ class _AuthScreenState extends State<AuthScreen> {
         }
         if (state.loginStatus == AuthStatus.success) {
   
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => SplashScreen()),
-          );
+                         Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+  MaterialPageRoute(builder: (_) => const SplashScreen()),
+  (route) => false,
+);
         }
         if (state.signupStatus == AuthStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
