@@ -232,6 +232,7 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
   @override
   Widget build(BuildContext context) {
     final pad = MediaQuery.of(context).padding;
+        final s = MediaQuery.of(context).size.width / 390.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FA),
@@ -289,24 +290,28 @@ class _LocationVendorsMapScreenState extends State<LocationVendorsMapScreen> {
               top: pad.top + 1,
               left: 6,
               right: 6,
+           //   bottom: 20,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.chevron_left_rounded, color: Colors.black, size: 32),
-                  ),
-                  const Expanded(
-                    child: Text(
-                      'Tire inspection Scanner',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'ClashGrotesk',
-                        fontWeight: FontWeight.w900,
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
+               
+                  // IconButton(
+                  //   onPressed: () => Navigator.pop(context),
+                  //   icon: const Icon(Icons.chevron_left_rounded, color: Colors.black, size: 32),
+                  // ),
+                   Padding(
+                     padding: const EdgeInsets.only(left:30.0),
+                     child: Text(
+                     'Sponsored vendors list',
+                     style: TextStyle(
+                       fontFamily: 'ClashGrotesk',
+                       fontSize: 20 * s,
+                       fontWeight: FontWeight.w700,
+                       color: Color(0xFF111111),
+                     ),
+                                       ),
+                   ),
                   const SizedBox(width: 46),
                 ],
               ),

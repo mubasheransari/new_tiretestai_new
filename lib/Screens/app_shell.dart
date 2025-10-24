@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
 import 'package:tire_testai/Screens/location_google_maos.dart';
 import 'package:tire_testai/Screens/report_history_screen.dart';
+import 'package:tire_testai/Screens/sponser_vendors_screen.dart';
 import '../Widgets/bottom_bar.dart';
 
 class AppShell extends StatefulWidget {
@@ -49,7 +50,7 @@ class _AppShellState extends State<AppShell> {
             _TabNavigator(key: _keys[BottomTab.home], initial: const InspectionHomePixelPerfect()),
             _TabNavigator(key: _keys[BottomTab.reports], initial: const ReportHistoryScreen()),
             _TabNavigator(key: _keys[BottomTab.map], initial: const LocationVendorsMapScreen()),
-            _TabNavigator(key: _keys[BottomTab.about], initial: const _AboutRoot()),
+            _TabNavigator(key: _keys[BottomTab.about], initial: const SponsoredVendorsScreen()),
             _TabNavigator(key: _keys[BottomTab.profile], initial: const _ProfileRoot()),
           ],
         ),

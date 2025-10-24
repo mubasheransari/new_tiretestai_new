@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:tire_testai/Screens/home_screen.dart';
 import 'package:tire_testai/Screens/report_history_screen.dart';
+import 'package:tire_testai/Screens/sponser_vendors_screen.dart';
 
 
 
@@ -19,7 +20,7 @@ class AppRoutes {
       case map:
         return _page(const ReportHistoryScreen());
       case about:
-        return _page(const ReportHistoryScreen());
+        return _page(const SponsoredVendorsScreen());
       case profile:
         return _page(const ReportHistoryScreen());
       case home:

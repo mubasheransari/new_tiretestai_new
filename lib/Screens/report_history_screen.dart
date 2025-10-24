@@ -81,12 +81,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 children: [
                   // AppBar row
                   Row(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.chevron_left_rounded, size: 28),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      Expanded(
+                      // IconButton(
+                      //   icon: const Icon(Icons.chevron_left_rounded, size: 28),
+                      //   onPressed: () => Navigator.pop(context),
+                      // ),
+                      Padding(
+                     padding: const EdgeInsets.only(left:30.0),
                         child: Text(
                           'Report History',
                           textAlign: TextAlign.center,
