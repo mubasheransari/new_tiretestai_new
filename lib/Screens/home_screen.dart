@@ -305,10 +305,18 @@ class _CarCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 34,),
-                _ChipButtonWhite(
-                  s: s,
-                  icon: 'assets/scan_icon.png',
-                  label: 'Scan Car Tries', // matches the mock text
+                InkWell(
+                  onTap: (){
+                    Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const ScannerFrontTireScreen()),
+  );
+                  },
+                  child: _ChipButtonWhite(
+                    s: s,
+                    icon: 'assets/scan_icon.png',
+                    label: 'Scan Car Tries', // matches the mock text
+                  ),
                 ),
               ],
             ),

@@ -65,7 +65,11 @@ class _ScannerFrontTireScreenState extends State<ScannerFrontTireScreen> with Wi
         _goCountdownAndUpload();
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Capture failed: $e')));
+     // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Capture failed: $e'))); current //
+
+
+
+     
     }
   }
 
@@ -152,20 +156,20 @@ class _ScannerFrontTireScreenState extends State<ScannerFrontTireScreen> with Wi
             ),
           ),
 
-          // bottom bar
-          // Positioned(
-          //   left: 16 * s,
-          //   right: 16 * s,
-          //   bottom: 14 * s,
-          //   child: BottomActionBar(
-          //     enabled: _ready,
-          //     onPickGallery: () => ScaffoldMessenger.of(context)
-          //         .showSnackBar(const SnackBar(content: Text('Pick from gallery (optional).'))),
-          //     onPickDocs: () => ScaffoldMessenger.of(context)
-          //         .showSnackBar(const SnackBar(content: Text('Pick documents (optional).'))),
-          //     onCapture: _capture, galleryIconAsset: 'assets/gallery_icon.png', captureIconAsset: 'assets/image_capture_icon.png', docsIconAsset: 'assets/document_icon.png',
-          //   ),
-          // ),
+     
+          Positioned(
+            left: 16 * s,
+            right: 16 * s,
+            bottom: 14 * s,
+            child: BottomActionBar(
+              enabled: _ready,
+              onPickGallery: () => ScaffoldMessenger.of(context)
+                  .showSnackBar(const SnackBar(content: Text('Pick from gallery (optional).'))),
+              onPickDocs: () => ScaffoldMessenger.of(context)
+                  .showSnackBar(const SnackBar(content: Text('Pick documents (optional).'))),
+              onCapture: _capture, galleryIconAsset: 'assets/gallery_icon.png', captureIconAsset: 'assets/image_capture_icon.png', docsIconAsset: 'assets/document_icon.png',
+            ),
+          ),
         ],
       ),
     );

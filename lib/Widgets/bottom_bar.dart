@@ -68,8 +68,8 @@ class BottomBar extends StatelessWidget {
         child: Center(
           child: Image.asset(
             asset,
-            width: 70,
-            height: 70,
+            width: 67,
+            height: 67,
            // fit: BoxFit.contain,
             // If your PNGs are multicolor, remove this 'color' line
            // color: iconColor,
@@ -88,8 +88,8 @@ class BottomBar extends StatelessWidget {
             children: [
               if (haloColor != null)
                 Container(
-                  width: size + 18 * s,
-                  height: size + 18 * s,
+                  width: size + 14 * s,
+                  height: size + 14 * s,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: haloColor.withOpacity(0.45),
@@ -201,11 +201,13 @@ class BottomBar extends StatelessWidget {
                 _chip(
                   asset: _iconPath[BottomTab.about]!,
                   onTap: () => _go(BottomTab.about),
+                             haloColor: const Color(0xFFE4F2FF),
                 ),
                 // Fifth: white chip
                 _chip(
                   asset: _iconPath[BottomTab.profile]!,
                   onTap: () => _go(BottomTab.profile),
+                             haloColor: const Color(0xFFE4F2FF),
                 ),
               ],
             ),
