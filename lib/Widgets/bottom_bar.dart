@@ -7,6 +7,9 @@ import 'dart:ui';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import 'dart:ui';
+import 'package:flutter/material.dart';
+
 enum BottomTab { home, reports, map, about, profile }
 
 class BottomBar extends StatelessWidget {
@@ -26,29 +29,39 @@ class BottomBar extends StatelessWidget {
     onChanged(tab);
   }
 
-  // UPDATE these to your actual assets (transparent PNG/SVG)
+  // Icons
   static const Map<BottomTab, String> _iconPath = {
-    BottomTab.home:    'assets/home_bottom_icon.png',
+    BottomTab.home:    'assets/icons8-home-50.png',
     BottomTab.reports: 'assets/history_bottom_icon.png',
-    BottomTab.map:     'assets/location_bottom_bar.png', // white glyph recommended
+    BottomTab.map:     'assets/location_bottom_bar.png',
     BottomTab.about:   'assets/technician_bottom_bar.png',
     BottomTab.profile: 'assets/profile_bottom_bar.png',
+  };
+
+  // Optional halos for inactive chips
+  static const Map<BottomTab, Color?> _halo = {
+    BottomTab.home:    Color(0xFFE3F7F3),
+    BottomTab.reports: Color(0xFFE4F2FF),
+    BottomTab.map:     null,
+    BottomTab.about:   Color(0xFFE4F2FF),
+    BottomTab.profile: Color(0xFFE4F2FF),
   };
 
   @override
   Widget build(BuildContext context) {
     final s = scale ?? (MediaQuery.of(context).size.width / 390.0);
 
-    // Standard white chip (with optional soft halo)
+    // ✅ Ensure the currently active icon is decoded and ready on first frame
+    precacheImage(AssetImage(_iconPath[active]!), context);
+
     Widget _chip({
       required String asset,
       required VoidCallback onTap,
       Color? haloColor,
-      Color? iconColor = const Color(0xFF111111),
+      Color? iconColor, // null = keep original asset colors
       bool lift = false,
     }) {
       final size = 56 * s;
-      final iconSize = 26 * s;
 
       final chip = Container(
         width: size,
@@ -68,11 +81,11 @@ class BottomBar extends StatelessWidget {
         child: Center(
           child: Image.asset(
             asset,
-            width: 67,
-            height: 67,
-           // fit: BoxFit.contain,
-            // If your PNGs are multicolor, remove this 'color' line
-           // color: iconColor,
+            width: 26 * s,
+            height: 26 * s,
+            color: iconColor,
+            colorBlendMode: iconColor != null ? BlendMode.srcIn : null,
+            fit: BoxFit.contain,
           ),
         ),
       );
@@ -95,21 +108,23 @@ class BottomBar extends StatelessWidget {
                     color: haloColor.withOpacity(0.45),
                   ),
                 ),
-              if (lift) Transform.translate(offset: Offset(0, -10 * s), child: chip) else chip,
+              if (lift)
+                Transform.translate(offset: Offset(0, -10 * s), child: chip)
+              else
+                chip,
             ],
           ),
         ),
       );
     }
 
-    // Gradient chip for the ACTIVE tab (matches the center one in screenshot)
+    // Active gradient chip (icon = solid white)
     Widget _gradientChip({
       required String asset,
       required VoidCallback onTap,
       bool lift = true,
     }) {
       final size = 60 * s;
-      final iconSize = 26 * s;
 
       final chip = Container(
         width: size,
@@ -123,12 +138,22 @@ class BottomBar extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Image.asset(
-            asset,
-            width: iconSize,
-            height: iconSize,
-           // fit: BoxFit.contain,
-        //    color: Colors.white, // white glyph on gradient
+          child: ShaderMask(
+            shaderCallback: (Rect r) =>
+                const LinearGradient(colors: [Colors.white, Colors.white]).createShader(r),
+            blendMode: BlendMode.srcATop,
+            child: Image.asset(
+              asset,
+              width: 26 * s,
+              height: 26 * s,
+              fit: BoxFit.contain,
+              // ✅ If the asset isn't ready/missing, show a white Material icon so the default tab isn’t blank
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.circle, // or Icons.home_filled if you want
+                size: 22 * s,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       );
@@ -139,18 +164,33 @@ class BottomBar extends StatelessWidget {
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onTap,
-          child:  Transform.translate(offset: Offset(0, -7 * s), child: chip) ,
+          child: Transform.translate(offset: Offset(0, -7 * s), child: chip),
         ),
       );
     }
 
-    // Bar background: white rounded pill with light border & soft shadow
+    Widget _buildItem(BottomTab tab) {
+      final asset = _iconPath[tab]!;
+      final isActive = active == tab;
+
+      if (isActive) {
+        return _gradientChip(asset: asset, onTap: () => _go(tab), lift: true);
+      }
+      return _chip(
+        asset: asset,
+        onTap: () => _go(tab),
+        haloColor: _halo[tab],
+        iconColor: Colors.black,
+        lift: false,
+      );
+    }
+
     return SafeArea(
       minimum: EdgeInsets.symmetric(horizontal: 4 * s, vertical: 5 * s),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(44 * s),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0), // subtle (can increase to 6–8 for frost)
+          filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
           child: Container(
             height: 78 * s,
             decoration: BoxDecoration(
@@ -169,46 +209,11 @@ class BottomBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Left: white chip with mint halo
-                _chip(
-                  asset: _iconPath[BottomTab.home]!,
-                  onTap: () => _go(BottomTab.home),
-                  haloColor: const Color(0xFFE3F7F3),
-                ),
-                // Second: white chip with light-blue halo
-                _chip(
-                  asset: _iconPath[BottomTab.reports]!,
-                  onTap: () => _go(BottomTab.reports),
-                  haloColor: const Color(0xFFE4F2FF),
-                ),
-                // Center: active shows gradient; otherwise white
-                // active == BottomTab.map
-                //     ? 
-                    Padding(
-                      padding: const EdgeInsets.only(right:8.0),
-                      child: _gradientChip(
-                          asset: _iconPath[BottomTab.map]!,
-                          onTap: () => _go(BottomTab.map),
-                        ),
-                    ),
-                    // : _chip(
-                    //     asset: _iconPath[BottomTab.map]!,
-                    //     onTap: () => _go(BottomTab.map),
-                    //     iconColor: const Color(0xFF111111),
-                    //     // no halo when inactive in screenshot
-                    //   ),
-                // Fourth: white chip
-                _chip(
-                  asset: _iconPath[BottomTab.about]!,
-                  onTap: () => _go(BottomTab.about),
-                             haloColor: const Color(0xFFE4F2FF),
-                ),
-                // Fifth: white chip
-                _chip(
-                  asset: _iconPath[BottomTab.profile]!,
-                  onTap: () => _go(BottomTab.profile),
-                             haloColor: const Color(0xFFE4F2FF),
-                ),
+                _buildItem(BottomTab.home),
+                _buildItem(BottomTab.reports),
+                _buildItem(BottomTab.map),
+                _buildItem(BottomTab.about),
+                _buildItem(BottomTab.profile),
               ],
             ),
           ),
@@ -217,6 +222,427 @@ class BottomBar extends StatelessWidget {
     );
   }
 }
+
+
+// enum BottomTab { home, reports, map, about, profile }
+
+// class BottomBar extends StatelessWidget {
+//   const BottomBar({
+//     super.key,
+//     required this.active,
+//     required this.onChanged,
+//     this.scale,
+//   });
+
+//   final BottomTab active;
+//   final ValueChanged<BottomTab> onChanged;
+//   final double? scale;
+
+//   void _go(BottomTab tab) {
+//     if (tab == active) return;
+//     onChanged(tab);
+//   }
+
+//   // Icons
+//   static const Map<BottomTab, String> _iconPath = {
+//     BottomTab.home:    'assets/home_bottom_icon.png',
+//     BottomTab.reports: 'assets/history_bottom_icon.png',
+//     BottomTab.map:     'assets/location_bottom_bar.png',
+//     BottomTab.about:   'assets/technician_bottom_bar.png',
+//     BottomTab.profile: 'assets/profile_bottom_bar.png',
+//   };
+
+//   // Optional halos for inactive chips
+//   static const Map<BottomTab, Color?> _halo = {
+//     BottomTab.home:    Color(0xFFE3F7F3),
+//     BottomTab.reports: Color(0xFFE4F2FF),
+//     BottomTab.map:     null,
+//     BottomTab.about:   Color(0xFFE4F2FF),
+//     BottomTab.profile: Color(0xFFE4F2FF),
+//   };
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final s = scale ?? (MediaQuery.of(context).size.width / 390.0);
+
+//     Widget _chip({
+//       required String asset,
+//       required VoidCallback onTap,
+//       Color? haloColor,
+//       Color? iconColor, // null = keep original asset colors
+//       bool lift = false,
+//     }) {
+//       final size = 56 * s;
+
+//       final chip = Container(
+//         width: size,
+//         height: size,
+//         decoration: BoxDecoration(
+//           shape: BoxShape.circle,
+//           color: Colors.white,
+//           border: Border.all(color: const Color(0xFFE9ECF2)),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(.08),
+//               blurRadius: 18 * s,
+//               offset: Offset(0, 10 * s),
+//             ),
+//           ],
+//         ),
+//         child: Center(
+//           child: Image.asset(
+//             asset,
+//             width: 26 * s,
+//             height: 26 * s,
+//             color: iconColor,
+//             colorBlendMode: iconColor != null ? BlendMode.srcIn : null,
+//           ),
+//         ),
+//       );
+
+//       return Material(
+//         color: Colors.transparent,
+//         shape: const CircleBorder(),
+//         child: InkWell(
+//           customBorder: const CircleBorder(),
+//           onTap: onTap,
+//           child: Stack(
+//             alignment: Alignment.center,
+//             children: [
+//               if (haloColor != null)
+//                 Container(
+//                   width: size + 14 * s,
+//                   height: size + 14 * s,
+//                   decoration: BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     color: haloColor.withOpacity(0.45),
+//                   ),
+//                 ),
+//               if (lift)
+//                 Transform.translate(offset: Offset(0, -10 * s), child: chip)
+//               else
+//                 chip,
+//             ],
+//           ),
+//         ),
+//       );
+//     }
+
+//     // Active gradient chip (icon = solid white via ShaderMask)
+//     Widget _gradientChip({
+//       required String asset,
+//       required VoidCallback onTap,
+//       bool lift = true,
+//     }) {
+//       final size = 60 * s;
+
+//       final chip = Container(
+//         width: size,
+//         height: size,
+//         decoration: const BoxDecoration(
+//           shape: BoxShape.circle,
+//           gradient: LinearGradient(
+//             colors: [Color(0xFF6DD5FF), Color(0xFF7F53FD)],
+//             begin: Alignment.topLeft,
+//             end: Alignment.bottomRight,
+//           ),
+//         ),
+//         child: Center(
+//           child: ShaderMask(
+//             shaderCallback: (Rect bounds) =>
+//                 const LinearGradient(colors: [Colors.white, Colors.white])
+//                     .createShader(bounds),
+//             blendMode: BlendMode.srcATop,
+//             child: Image.asset(
+//               asset,
+//               width: 26 * s,
+//               height: 26 * s,
+//               fit: BoxFit.contain,
+//             ),
+//           ),
+//         ),
+//       );
+
+//       return Material(
+//         color: Colors.transparent,
+//         shape: const CircleBorder(),
+//         child: InkWell(
+//           customBorder: const CircleBorder(),
+//           onTap: onTap,
+//           child: Transform.translate(offset: Offset(0, -7 * s), child: chip),
+//         ),
+//       );
+//     }
+
+//     Widget _buildItem(BottomTab tab) {
+//       final asset = _iconPath[tab]!;
+//       final isActive = active == tab;
+
+//       if (isActive) {
+//         return _gradientChip(asset: asset, onTap: () => _go(tab), lift: true);
+//       }
+//       return _chip(
+//         asset: asset,
+//         onTap: () => _go(tab),
+//         haloColor: _halo[tab],
+//         iconColor: Colors.black,
+//         lift: false,
+//       );
+//     }
+
+//     return SafeArea(
+//       minimum: EdgeInsets.symmetric(horizontal: 4 * s, vertical: 5 * s),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(44 * s),
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
+//           child: Container(
+//             height: 78 * s,
+//             decoration: BoxDecoration(
+//               color: Colors.white.withOpacity(0.92),
+//               borderRadius: BorderRadius.circular(44 * s),
+//               border: Border.all(color: const Color(0xFFE9ECF2)),
+//               boxShadow: [
+//                 BoxShadow(
+//                   color: Colors.black.withOpacity(.08),
+//                   blurRadius: 20 * s,
+//                   offset: Offset(0, 10 * s),
+//                 ),
+//               ],
+//             ),
+//             padding: EdgeInsets.symmetric(horizontal: 16 * s),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 _buildItem(BottomTab.home),
+//                 _buildItem(BottomTab.reports),
+//                 _buildItem(BottomTab.map),
+//                 _buildItem(BottomTab.about),
+//                 _buildItem(BottomTab.profile),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+// import 'dart:ui';
+// import 'package:flutter/material.dart';
+
+// enum BottomTab { home, reports, map, about, profile }
+
+// class BottomBar extends StatelessWidget {
+//   const BottomBar({
+//     super.key,
+//     required this.active,
+//     required this.onChanged,
+//     this.scale,
+//   });
+
+//   final BottomTab active;
+//   final ValueChanged<BottomTab> onChanged;
+//   final double? scale;
+
+//   void _go(BottomTab tab) {
+//     if (tab == active) return;
+//     onChanged(tab);
+//   }
+
+//   // UPDATE these to your actual assets (transparent PNG/SVG)
+//   static const Map<BottomTab, String> _iconPath = {
+//     BottomTab.home:    'assets/home_bottom_icon.png',
+//     BottomTab.reports: 'assets/history_bottom_icon.png',
+//     BottomTab.map:     'assets/location_bottom_bar.png', // white glyph recommended
+//     BottomTab.about:   'assets/technician_bottom_bar.png',
+//     BottomTab.profile: 'assets/profile_bottom_bar.png',
+//   };
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final s = scale ?? (MediaQuery.of(context).size.width / 390.0);
+
+//     // Standard white chip (with optional soft halo)
+//     Widget _chip({
+//       required String asset,
+//       required VoidCallback onTap,
+//       Color? haloColor,
+//       Color? iconColor = const Color(0xFF111111),
+//       bool lift = false,
+//     }) {
+//       final size = 56 * s;
+//       final iconSize = 26 * s;
+
+//       final chip = Container(
+//         width: size,
+//         height: size,
+//         decoration: BoxDecoration(
+//           shape: BoxShape.circle,
+//           color: Colors.white,
+//           border: Border.all(color: const Color(0xFFE9ECF2)),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(.08),
+//               blurRadius: 18 * s,
+//               offset: Offset(0, 10 * s),
+//             ),
+//           ],
+//         ),
+//         child: Center(
+//           child: Image.asset(
+//             asset,
+//             width: 67,
+//             height: 67,
+//            // fit: BoxFit.contain,
+//             // If your PNGs are multicolor, remove this 'color' line
+//            // color: iconColor,
+//           ),
+//         ),
+//       );
+
+//       return Material(
+//         color: Colors.transparent,
+//         shape: const CircleBorder(),
+//         child: InkWell(
+//           customBorder: const CircleBorder(),
+//           onTap: onTap,
+//           child: Stack(
+//             alignment: Alignment.center,
+//             children: [
+//               if (haloColor != null)
+//                 Container(
+//                   width: size + 14 * s,
+//                   height: size + 14 * s,
+//                   decoration: BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     color: haloColor.withOpacity(0.45),
+//                   ),
+//                 ),
+//               if (lift) Transform.translate(offset: Offset(0, -10 * s), child: chip) else chip,
+//             ],
+//           ),
+//         ),
+//       );
+//     }
+
+//     // Gradient chip for the ACTIVE tab (matches the center one in screenshot)
+//     Widget _gradientChip({
+//       required String asset,
+//       required VoidCallback onTap,
+//       bool lift = true,
+//     }) {
+//       final size = 60 * s;
+//       final iconSize = 26 * s;
+
+//       final chip = Container(
+//         width: size,
+//         height: size,
+//         decoration: const BoxDecoration(
+//           shape: BoxShape.circle,
+//           gradient: LinearGradient(
+//             colors: [Color(0xFF6DD5FF), Color(0xFF7F53FD)],
+//             begin: Alignment.topLeft,
+//             end: Alignment.bottomRight,
+//           ),
+//         ),
+//         child: Center(
+//           child: Image.asset(
+//             asset,
+//             width: iconSize,
+//             height: iconSize,
+//            // fit: BoxFit.contain,
+//         //    color: Colors.white, // white glyph on gradient
+//           ),
+//         ),
+//       );
+
+//       return Material(
+//         color: Colors.transparent,
+//         shape: const CircleBorder(),
+//         child: InkWell(
+//           customBorder: const CircleBorder(),
+//           onTap: onTap,
+//           child:  Transform.translate(offset: Offset(0, -7 * s), child: chip) ,
+//         ),
+//       );
+//     }
+
+//     // Bar background: white rounded pill with light border & soft shadow
+//     return SafeArea(
+//       minimum: EdgeInsets.symmetric(horizontal: 4 * s, vertical: 5 * s),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(44 * s),
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0), // subtle (can increase to 6–8 for frost)
+//           child: Container(
+//             height: 78 * s,
+//             decoration: BoxDecoration(
+//               color: Colors.white.withOpacity(0.92),
+//               borderRadius: BorderRadius.circular(44 * s),
+//               border: Border.all(color: const Color(0xFFE9ECF2)),
+//               boxShadow: [
+//                 BoxShadow(
+//                   color: Colors.black.withOpacity(.08),
+//                   blurRadius: 20 * s,
+//                   offset: Offset(0, 10 * s),
+//                 ),
+//               ],
+//             ),
+//             padding: EdgeInsets.symmetric(horizontal: 16 * s),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 // Left: white chip with mint halo
+//                 _chip(
+//                   asset: _iconPath[BottomTab.home]!,
+//                   onTap: () => _go(BottomTab.home),
+//                   haloColor: const Color(0xFFE3F7F3),
+//                 ),
+//                 // Second: white chip with light-blue halo
+//                 _chip(
+//                   asset: _iconPath[BottomTab.reports]!,
+//                   onTap: () => _go(BottomTab.reports),
+//                   haloColor: const Color(0xFFE4F2FF),
+//                 ),
+//                 // Center: active shows gradient; otherwise white
+//                 // active == BottomTab.map
+//                 //     ? 
+//                     Padding(
+//                       padding: const EdgeInsets.only(right:8.0),
+//                       child: _gradientChip(
+//                           asset: _iconPath[BottomTab.map]!,
+//                           onTap: () => _go(BottomTab.map),
+//                         ),
+//                     ),
+//                     // : _chip(
+//                     //     asset: _iconPath[BottomTab.map]!,
+//                     //     onTap: () => _go(BottomTab.map),
+//                     //     iconColor: const Color(0xFF111111),
+//                     //     // no halo when inactive in screenshot
+//                     //   ),
+//                 // Fourth: white chip
+//                 _chip(
+//                   asset: _iconPath[BottomTab.about]!,
+//                   onTap: () => _go(BottomTab.about),
+//                              haloColor: const Color(0xFFE4F2FF),
+//                 ),
+//                 // Fifth: white chip
+//                 _chip(
+//                   asset: _iconPath[BottomTab.profile]!,
+//                   onTap: () => _go(BottomTab.profile),
+//                              haloColor: const Color(0xFFE4F2FF),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 
 
